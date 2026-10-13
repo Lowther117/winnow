@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Winnow - Windows 11 debloater and TMOG-style task manager.
+    Built by build-exe.bat into one self-contained dist\Winnow.exe:
+      dotnet publish -c Release -r win-x64 --self-contained true
+    Nothing needs installing on the PC that runs it.
+  -->
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>Winnow</RootNamespace>
+    <AssemblyName>Winnow</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\winnow.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Product>Winnow</Product>
+    <Description>Windows 11 debloater, privacy controls and task manager</Description>
+    <Copyright>Lowther117</Copyright>
+    <!-- Warnings never fail the build; only real errors do. -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CA1416;CS8632;NU1701;NU1603;WFAC010</NoWarn>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <TieredPGO>true</TieredPGO>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+  </PropertyGroup>
+
+  <!-- Publish settings, used by build-exe.bat. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <DebugType>embedded</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Hardware sensors: temperatures, clocks, fans, power. Reads the CPU
+         through the PawnIO driver (Microsoft-signed), which Winnow installs on
+         first run - not the old WinRing0 driver Defender quarantines. -->
+    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
+    <!-- Live per-process network bytes from Windows' own event tracing. -->
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\winnow.ico" />
+    <EmbeddedResource Include="Assets\catalogue.json" LogicalName="Winnow.catalogue.json" />
+  </ItemGroup>
+
+</Project>

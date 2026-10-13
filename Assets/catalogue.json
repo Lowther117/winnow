@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "name": "Browsers",
+      "apps": [
+        { "id": "Mozilla.Firefox", "name": "Firefox", "description": "Mozilla's open-source browser with strong tracking protection.", "tags": ["browser", "web"] },
+        { "id": "Google.Chrome", "name": "Google Chrome", "description": "Google's browser. Syncs with your Google account.", "tags": ["browser", "web"] },
+        { "id": "Brave.Brave", "name": "Brave", "description": "Chromium-based browser with a built-in ad and tracker blocker.", "tags": ["browser", "web", "privacy"] },
+        { "id": "Vivaldi.Vivaldi", "name": "Vivaldi", "description": "Highly customisable Chromium-based browser with tab stacking.", "tags": ["browser", "web"] },
+        { "id": "LibreWolf.LibreWolf", "name": "LibreWolf", "description": "Firefox fork with telemetry removed and privacy settings on by default.", "tags": ["browser", "web", "privacy"] },
+        { "id": "Zen-Team.Zen-Browser", "name": "Zen Browser", "description": "Firefox-based browser with vertical tabs and a minimal layout.", "tags": ["browser", "web"] },
+        { "id": "Opera.Opera", "name": "Opera", "description": "Chromium-based browser with a free built-in VPN proxy.", "tags": ["browser", "web"] },
+        { "id": "TorProject.TorBrowser", "name": "Tor Browser", "description": "Browses through the Tor network to hide your location and activity.", "tags": ["browser", "web", "privacy"] }
+      ]
+    },
+    {
+      "name": "Communication",
+      "apps": [
+        { "id": "Discord.Discord", "name": "Discord", "description": "Voice, video and text chat for communities and friends.", "tags": ["chat", "voice", "gaming"] },
+        { "id": "OpenWhisperSystems.Signal", "name": "Signal", "description": "End-to-end encrypted messaging. Links to Signal on your phone.", "tags": ["chat", "privacy"] },
+        { "id": "Telegram.TelegramDesktop", "name": "Telegram", "description": "Cloud-based messaging with large groups and channels.", "tags": ["chat"] },
+        { "id": "9NKSQGP7F2NH", "name": "WhatsApp", "description": "WhatsApp for Windows, from the Microsoft Store. Links to your phone.", "tags": ["chat"], "source": "msstore" },
+        { "id": "Zoom.Zoom", "name": "Zoom", "description": "Video meetings and calls.", "tags": ["video", "meetings"] },
+        { "id": "Microsoft.Teams", "name": "Microsoft Teams", "description": "Microsoft's chat and meetings app for work, school and personal use.", "tags": ["chat", "meetings"] },
+        { "id": "SlackTechnologies.Slack", "name": "Slack", "description": "Team chat organised into channels.", "tags": ["chat", "work"] },
+        { "id": "Element.Element", "name": "Element", "description": "Matrix chat client: open, decentralised and end-to-end encrypted.", "tags": ["chat", "privacy"] },
+        { "id": "Mozilla.Thunderbird", "name": "Thunderbird", "description": "Free email, calendar and contacts client from Mozilla.", "tags": ["email"] },
+        { "id": "Proton.ProtonMail", "name": "Proton Mail", "description": "Desktop app for encrypted Proton Mail accounts.", "tags": ["email", "privacy"] }
+      ]
+    },
+    {
+      "name": "Media",
+      "apps": [
+        { "id": "VideoLAN.VLC", "name": "VLC media player", "description": "Plays almost any video or audio file without extra codecs.", "tags": ["video", "audio", "player"] },
+        { "id": "shinchiro.mpv", "name": "mpv", "description": "Minimal, keyboard-driven video player with excellent quality.", "tags": ["video", "player"] },
+        { "id": "clsid2.mpc-hc", "name": "MPC-HC", "description": "Lightweight classic video player (maintained clsid2 build).", "tags": ["video", "player"] },
+        { "id": "Daum.PotPlayer", "name": "PotPlayer", "description": "Feature-rich video player with built-in codecs.", "tags": ["video", "player"] },
+        { "id": "CodecGuide.K-LiteCodecPack.Standard", "name": "K-Lite Codec Pack", "description": "Codecs so Windows' own players can open more formats.", "tags": ["video", "codecs"] },
+        { "id": "Spotify.Spotify", "name": "Spotify", "description": "Music and podcast streaming.", "tags": ["music", "streaming"] },
+        { "id": "PeterPawlowski.foobar2000", "name": "foobar2000", "description": "Fast, highly customisable music player for local libraries.", "tags": ["music", "player"] },
+        { "id": "FlorianHeidenreich.Mp3tag", "name": "Mp3tag", "description": "Edits tags and cover art for music files in bulk.", "tags": ["music", "tags"] },
+        { "id": "XBMCFoundation.Kodi", "name": "Kodi", "description": "Media centre for films, TV and music libraries.", "tags": ["video", "media centre"] },
+        { "id": "Stremio.Stremio", "name": "Stremio", "description": "Media centre that organises films and series from add-ons.", "tags": ["video", "streaming"] },
+        { "id": "Audacity.Audacity", "name": "Audacity", "description": "Records and edits audio.", "tags": ["audio", "editor"] },
+        { "id": "HandBrake.HandBrake", "name": "HandBrake", "description": "Converts and compresses video files.", "tags": ["video", "converter"] },
+        { "id": "OBSProject.OBSStudio", "name": "OBS Studio", "description": "Screen recording and live streaming.", "tags": ["video", "recording", "streaming"] },
+        { "id": "KDE.Kdenlive", "name": "Kdenlive", "description": "Free multi-track video editor.", "tags": ["video", "editor"] },
+        { "id": "ShareX.ShareX", "name": "ShareX", "description": "Screenshots, screen recording and annotation with many upload options.", "tags": ["screenshot", "recording"] },
+        { "id": "Greenshot.Greenshot", "name": "Greenshot", "description": "Simple screenshot tool with quick annotation.", "tags": ["screenshot"] },
+        { "id": "IrfanSkiljan.IrfanView", "name": "IrfanView", "description": "Very fast image viewer with batch convert and resize.", "tags": ["images", "viewer"] },
+        { "id": "DuongDieuPhap.ImageGlass", "name": "ImageGlass", "description": "Clean, modern image viewer.", "tags": ["images", "viewer"] },
+        { "id": "dotPDN.PaintDotNet", "name": "Paint.NET", "description": "Easy image editor with layers and effects.", "tags": ["images", "editor"] },
+        { "id": "GIMP.GIMP.3", "name": "GIMP", "description": "Full image editor, a free alternative to Photoshop.", "tags": ["images", "editor"] },
+        { "id": "Inkscape.Inkscape", "name": "Inkscape", "description": "Vector graphics editor for SVG, logos and diagrams.", "tags": ["images", "vector"] },
+        { "id": "KDE.Krita", "name": "Krita", "description": "Digital painting and illustration.", "tags": ["images", "painting"] },
+        { "id": "BlenderFoundation.Blender", "name": "Blender", "description": "3D modelling, animation and rendering.", "tags": ["3d", "animation"] },
+        { "id": "darktable.darktable", "name": "darktable", "description": "RAW photo developer and photo library, like Lightroom.", "tags": ["photos", "raw"] }
+      ]
+    },
+    {
+      "name": "Gaming",
+      "apps": [
+        { "id": "Valve.Steam", "name": "Steam", "description": "Valve's PC game store and launcher.", "tags": ["games", "launcher"] },
+        { "id": "EpicGames.EpicGamesLauncher", "name": "Epic Games Launcher", "description": "Epic Games Store and Unreal Engine launcher.", "tags": ["games", "launcher"] },
+        { "id": "GOG.Galaxy", "name": "GOG Galaxy", "description": "GOG's launcher; can also show games from other stores.", "tags": ["games", "launcher"] },
+        { "id": "ElectronicArts.EADesktop", "name": "EA app", "description": "Electronic Arts' launcher (replaced Origin).", "tags": ["games", "launcher"] },
+        { "id": "Ubisoft.Connect", "name": "Ubisoft Connect", "description": "Ubisoft's launcher and store.", "tags": ["games", "launcher"] },
+        { "id": "Blizzard.BattleNet", "name": "Battle.net", "description": "Blizzard and Activision launcher.", "tags": ["games", "launcher"] },
+        { "id": "HeroicGamesLauncher.HeroicGamesLauncher", "name": "Heroic Games Launcher", "description": "Open-source launcher for Epic, GOG and Amazon games.", "tags": ["games", "launcher"] },
+        { "id": "Playnite.Playnite", "name": "Playnite", "description": "One library for games from every store and emulator.", "tags": ["games", "library"] },
+        { "id": "PrismLauncher.PrismLauncher", "name": "Prism Launcher", "description": "Minecraft launcher that manages separate instances and mods.", "tags": ["games", "minecraft"] },
+        { "id": "Guru3D.Afterburner", "name": "MSI Afterburner", "description": "GPU overclocking, fan curves and the RivaTuner in-game overlay.", "tags": ["gpu", "overlay"] },
+        { "id": "Parsec.Parsec", "name": "Parsec", "description": "Low-latency remote desktop for playing games remotely.", "tags": ["games", "remote"] }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "apps": [
+        { "id": "7zip.7zip", "name": "7-Zip", "description": "Opens and creates zip, 7z, rar and most other archives.", "tags": ["archive", "zip"] },
+        { "id": "M2Team.NanaZip", "name": "NanaZip", "description": "7-Zip with the Windows 11 right-click menu built in.", "tags": ["archive", "zip"] },
+        { "id": "Giorgiotani.Peazip", "name": "PeaZip", "description": "Free archive manager supporting 200+ formats.", "tags": ["archive", "zip"] },
+        { "id": "RARLab.WinRAR", "name": "WinRAR", "description": "The original RAR archiver (trial-ware).", "tags": ["archive", "rar"] },
+        { "id": "Microsoft.PowerToys", "name": "PowerToys", "description": "Microsoft's power-user extras: FancyZones, PowerRename, Run and more.", "tags": ["tools", "windows"] },
+        { "id": "voidtools.Everything", "name": "Everything", "description": "Finds any file by name instantly.", "tags": ["search", "files"] },
+        { "id": "FilesCommunity.Files", "name": "Files", "description": "Modern file manager with tabs and panes.", "tags": ["files", "explorer"] },
+        { "id": "QL-Win.QuickLook", "name": "QuickLook", "description": "Press Space in Explorer to preview a file, like on a Mac.", "tags": ["files", "preview"] },
+        { "id": "Ditto.Ditto", "name": "Ditto", "description": "Clipboard history with search.", "tags": ["clipboard"] },
+        { "id": "Flow-Launcher.Flow-Launcher", "name": "Flow Launcher", "description": "Keyboard launcher for apps, files and web searches.", "tags": ["launcher", "search"] },
+        { "id": "AutoHotkey.AutoHotkey", "name": "AutoHotkey", "description": "Scripting for hotkeys, text expansion and automation.", "tags": ["automation", "scripting"] },
+        { "id": "Rainmeter.Rainmeter", "name": "Rainmeter", "description": "Desktop widgets and system monitors (skins).", "tags": ["desktop", "widgets"] },
+        { "id": "AntibodySoftware.WizTree", "name": "WizTree", "description": "Shows what is using your disk space, very quickly.", "tags": ["disk", "space"] },
+        { "id": "WinDirStat.WinDirStat", "name": "WinDirStat", "description": "Disk usage map and cleanup tool.", "tags": ["disk", "space"] },
+        { "id": "JAMSoftware.TreeSize.Free", "name": "TreeSize Free", "description": "Folder sizes as a tree.", "tags": ["disk", "space"] },
+        { "id": "Klocman.BulkCrapUninstaller", "name": "Bulk Crap Uninstaller", "description": "Removes many programs at once and cleans up leftovers.", "tags": ["uninstall", "cleanup"] },
+        { "id": "RevoUninstaller.RevoUninstaller", "name": "Revo Uninstaller", "description": "Uninstaller that also scans for leftover files and registry entries.", "tags": ["uninstall", "cleanup"] },
+        { "id": "BleachBit.BleachBit", "name": "BleachBit", "description": "Clears caches, logs and temporary files.", "tags": ["cleanup", "privacy"] },
+        { "id": "Rufus.Rufus", "name": "Rufus", "description": "Makes bootable USB drives from ISO images.", "tags": ["usb", "boot"] },
+        { "id": "Ventoy.Ventoy", "name": "Ventoy", "description": "One USB stick that boots any ISO you copy onto it.", "tags": ["usb", "boot"] },
+        { "id": "CPUID.CPU-Z", "name": "CPU-Z", "description": "CPU, memory and motherboard details.", "tags": ["hardware", "info"] },
+        { "id": "TechPowerUp.GPU-Z", "name": "GPU-Z", "description": "Graphics card details and sensors.", "tags": ["hardware", "gpu", "info"] },
+        { "id": "REALiX.HWiNFO", "name": "HWiNFO", "description": "Detailed hardware information and every sensor reading.", "tags": ["hardware", "sensors"] },
+        { "id": "LibreHardwareMonitor.LibreHardwareMonitor", "name": "Libre Hardware Monitor", "description": "Open-source temperatures, fan speeds and clocks.", "tags": ["hardware", "sensors"] },
+        { "id": "CrystalDewWorld.CrystalDiskInfo", "name": "CrystalDiskInfo", "description": "Drive health (SMART) and temperatures.", "tags": ["disk", "health"] },
+        { "id": "CrystalDewWorld.CrystalDiskMark", "name": "CrystalDiskMark", "description": "Measures drive read and write speeds.", "tags": ["disk", "benchmark"] },
+        { "id": "Wagnardsoft.DisplayDriverUninstaller", "name": "Display Driver Uninstaller", "description": "Completely removes NVIDIA, AMD or Intel graphics drivers.", "tags": ["gpu", "drivers"] },
+        { "id": "TechPowerUp.NVCleanstall", "name": "NVCleanstall", "description": "Installs NVIDIA drivers without the extras and telemetry.", "tags": ["gpu", "drivers"] },
+        { "id": "Microsoft.Sysinternals.Suite", "name": "Sysinternals Suite", "description": "Microsoft's full set of Sysinternals troubleshooting tools.", "tags": ["sysinternals", "tools"] },
+        { "id": "Microsoft.Sysinternals.ProcessExplorer", "name": "Process Explorer", "description": "Advanced process viewer from Sysinternals.", "tags": ["sysinternals", "processes"] },
+        { "id": "Microsoft.Sysinternals.ProcessMonitor", "name": "Process Monitor", "description": "Live file, registry and process activity log.", "tags": ["sysinternals", "processes"] },
+        { "id": "Microsoft.Sysinternals.Autoruns", "name": "Autoruns", "description": "Shows everything that starts with Windows.", "tags": ["sysinternals", "startup"] },
+        { "id": "WinsiderSS.SystemInformer", "name": "System Informer", "description": "Open-source process, service and network monitor (formerly Process Hacker).", "tags": ["processes", "monitor"] },
+        { "id": "Malwarebytes.Malwarebytes", "name": "Malwarebytes", "description": "Second-opinion malware scanner.", "tags": ["security", "malware"] }
+      ]
+    },
+    {
+      "name": "Security and network",
+      "apps": [
+        { "id": "KeePassXCTeam.KeePassXC", "name": "KeePassXC", "description": "Offline password manager using a local encrypted file.", "tags": ["passwords", "security"] },
+        { "id": "Bitwarden.Bitwarden", "name": "Bitwarden", "description": "Open-source password manager that syncs across devices.", "tags": ["passwords", "security"] },
+        { "id": "Proton.ProtonPass", "name": "Proton Pass", "description": "Proton's end-to-end encrypted password manager.", "tags": ["passwords", "security"] },
+        { "id": "Proton.ProtonVPN", "name": "Proton VPN", "description": "VPN from Proton with a free tier.", "tags": ["vpn", "privacy"] },
+        { "id": "MullvadVPN.MullvadVPN", "name": "Mullvad VPN", "description": "Privacy-focused VPN; no account details needed.", "tags": ["vpn", "privacy"] },
+        { "id": "WireGuard.WireGuard", "name": "WireGuard", "description": "Fast, simple VPN tunnels using WireGuard configs.", "tags": ["vpn", "network"] },
+        { "id": "Tailscale.Tailscale", "name": "Tailscale", "description": "Private network between your own devices, built on WireGuard.", "tags": ["vpn", "network"] },
+        { "id": "qBittorrent.qBittorrent", "name": "qBittorrent", "description": "Open-source BitTorrent client with no adverts.", "tags": ["torrent", "download"] },
+        { "id": "Syncthing.Syncthing", "name": "Syncthing", "description": "Syncs folders directly between your devices, no cloud.", "tags": ["sync", "files"] },
+        { "id": "LocalSend.LocalSend", "name": "LocalSend", "description": "Sends files to nearby phones and PCs over Wi-Fi.", "tags": ["files", "sharing"] },
+        { "id": "AnyDesk.AnyDesk", "name": "AnyDesk", "description": "Remote desktop access and support.", "tags": ["remote"] },
+        { "id": "TeamViewer.TeamViewer", "name": "TeamViewer", "description": "Remote desktop access and support.", "tags": ["remote"] }
+      ]
+    },
+    {
+      "name": "Office and documents",
+      "apps": [
+        { "id": "TheDocumentFoundation.LibreOffice", "name": "LibreOffice", "description": "Free office suite: documents, spreadsheets and presentations.", "tags": ["office", "documents"] },
+        { "id": "ONLYOFFICE.DesktopEditors", "name": "ONLYOFFICE", "description": "Office suite with close Microsoft Office file compatibility.", "tags": ["office", "documents"] },
+        { "id": "SumatraPDF.SumatraPDF", "name": "SumatraPDF", "description": "Tiny, fast reader for PDF, ePub and comic files.", "tags": ["pdf", "reader"] },
+        { "id": "Adobe.Acrobat.Reader.64-bit", "name": "Adobe Acrobat Reader", "description": "Adobe's PDF reader, for forms and signatures.", "tags": ["pdf", "reader"] },
+        { "id": "KDE.Okular", "name": "Okular", "description": "Document viewer for PDF, ePub and more, with annotations.", "tags": ["pdf", "reader"] },
+        { "id": "Obsidian.Obsidian", "name": "Obsidian", "description": "Notes in plain Markdown files with links between them.", "tags": ["notes", "markdown"] },
+        { "id": "Notion.Notion", "name": "Notion", "description": "Notes, wikis and task boards in one workspace.", "tags": ["notes", "tasks"] },
+        { "id": "Joplin.Joplin", "name": "Joplin", "description": "Open-source notes with encrypted sync.", "tags": ["notes", "markdown"] },
+        { "id": "calibre.calibre", "name": "calibre", "description": "E-book library manager and converter.", "tags": ["ebooks"] },
+        { "id": "Rizonesoft.Notepad3", "name": "Notepad3", "description": "Lightweight Notepad replacement with syntax highlighting.", "tags": ["text", "editor"] }
+      ]
+    },
+    {
+      "name": "Development",
+      "apps": [
+        { "id": "Microsoft.VisualStudioCode", "name": "Visual Studio Code", "description": "Microsoft's code editor with a huge extension library.", "tags": ["editor", "code"] },
+        { "id": "VSCodium.VSCodium", "name": "VSCodium", "description": "VS Code built without Microsoft's telemetry and branding.", "tags": ["editor", "code"] },
+        { "id": "Notepad++.Notepad++", "name": "Notepad++", "description": "Fast text and code editor.", "tags": ["editor", "text"] },
+        { "id": "Git.Git", "name": "Git", "description": "Version control, with Git Bash.", "tags": ["git", "code"] },
+        { "id": "GitHub.GitHubDesktop", "name": "GitHub Desktop", "description": "Point-and-click Git for GitHub repositories.", "tags": ["git", "github"] },
+        { "id": "Python.Python.3.14", "name": "Python 3.14", "description": "The current Python release.", "tags": ["python", "language"] },
+        { "id": "Python.Python.3.13", "name": "Python 3.13", "description": "The previous Python release, for packages not yet on 3.14.", "tags": ["python", "language"] },
+        { "id": "OpenJS.NodeJS.LTS", "name": "Node.js LTS", "description": "JavaScript runtime and npm, long-term support version.", "tags": ["javascript", "node"] },
+        { "id": "Microsoft.DotNet.SDK.10", "name": ".NET 10 SDK", "description": "Builds .NET 10 apps (C#, F#).", "tags": ["dotnet", "csharp"] },
+        { "id": "Microsoft.WindowsTerminal", "name": "Windows Terminal", "description": "Tabbed terminal for PowerShell, Command Prompt and WSL.", "tags": ["terminal"] },
+        { "id": "Microsoft.PowerShell", "name": "PowerShell 7", "description": "The current cross-platform PowerShell, alongside Windows PowerShell 5.1.", "tags": ["shell", "scripting"] },
+        { "id": "Docker.DockerDesktop", "name": "Docker Desktop", "description": "Runs containers on Windows (uses WSL 2).", "tags": ["containers"] },
+        { "id": "Oracle.VirtualBox", "name": "VirtualBox", "description": "Free virtual machines.", "tags": ["virtualisation"] },
+        { "id": "JetBrains.Toolbox", "name": "JetBrains Toolbox", "description": "Installs and updates JetBrains IDEs (PyCharm, Rider, IntelliJ).", "tags": ["ide"] },
+        { "id": "WinSCP.WinSCP", "name": "WinSCP", "description": "SFTP, SCP and FTP file transfer.", "tags": ["ftp", "sftp"] },
+        { "id": "PuTTY.PuTTY", "name": "PuTTY", "description": "SSH and serial terminal client.", "tags": ["ssh"] },
+        { "id": "WiresharkFoundation.Wireshark", "name": "Wireshark", "description": "Captures and inspects network traffic.", "tags": ["network", "capture"] },
+        { "id": "Postman.Postman", "name": "Postman", "description": "Builds and tests HTTP APIs.", "tags": ["api", "http"] },
+        { "id": "DBBrowserForSQLite.DBBrowserForSQLite", "name": "DB Browser for SQLite", "description": "Opens, edits and queries SQLite database files.", "tags": ["database", "sqlite"] }
+      ]
+    },
+    {
+      "name": "Runtimes",
+      "apps": [
+        { "id": "Microsoft.VCRedist.2015+.x64", "name": "Visual C++ 2015-2022 (x64)", "description": "Needed by many 64-bit programs and games.", "tags": ["runtime", "vcredist"] },
+        { "id": "Microsoft.VCRedist.2015+.x86", "name": "Visual C++ 2015-2022 (x86)", "description": "Needed by many 32-bit programs and games.", "tags": ["runtime", "vcredist"] },
+        { "id": "Microsoft.DotNet.DesktopRuntime.8", "name": ".NET 8 Desktop Runtime", "description": "Runs Windows apps built on .NET 8.", "tags": ["runtime", "dotnet"] },
+        { "id": "Microsoft.DotNet.DesktopRuntime.10", "name": ".NET 10 Desktop Runtime", "description": "Runs Windows apps built on .NET 10.", "tags": ["runtime", "dotnet"] },
+        { "id": "EclipseAdoptium.Temurin.21.JRE", "name": "Java 21 (Temurin JRE)", "description": "Free Java runtime for Java programs and Minecraft servers.", "tags": ["runtime", "java"] },
+        { "id": "Microsoft.DirectX", "name": "DirectX End-User Runtime", "description": "Older DirectX 9-11 files some games still need.", "tags": ["runtime", "directx", "games"] }
+      ]
+    },
+    {
+      "name": "Cloud storage",
+      "apps": [
+        { "id": "Proton.ProtonDrive", "name": "Proton Drive", "description": "End-to-end encrypted cloud storage from Proton.", "tags": ["cloud", "sync"] },
+        { "id": "Dropbox.Dropbox", "name": "Dropbox", "description": "Dropbox cloud storage and sync.", "tags": ["cloud", "sync"] },
+        { "id": "Google.GoogleDrive", "name": "Google Drive", "description": "Google Drive for desktop.", "tags": ["cloud", "sync"] },
+        { "id": "Microsoft.OneDrive", "name": "OneDrive", "description": "Microsoft's cloud storage. Reinstall it here if you removed it.", "tags": ["cloud", "sync"] }
+      ]
+    }
+  ]
+}

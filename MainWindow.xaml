@@ -1,0 +1,100 @@
+<Window x:Class="Winnow.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Winnow" Width="1280" Height="820" MinWidth="980" MinHeight="620"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}"
+        FontFamily="{DynamicResource UiFont}" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="214"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ======================== sidebar -->
+        <Border Grid.RowSpan="2" Background="{DynamicResource Sidebar}" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="18,16,12,10">
+                    <TextBlock x:Name="Brand" Text="WINNOW" FontFamily="{DynamicResource MonoFont}" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource Accent}">
+                        <TextBlock.Effect>
+                            <DropShadowEffect x:Name="BrandGlow" ShadowDepth="0" BlurRadius="14" Opacity="0.85" Color="#b77dff"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock x:Name="BrandSub" Text="" FontSize="11" Foreground="{DynamicResource Dim}" Margin="1,2,0,0" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+
+                <!-- live mini-readout + state chips, pinned to the bottom -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="16,8,12,12">
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="CPU" Style="{StaticResource Label}"/>
+                        <Border Grid.Column="1" x:Name="MiniCpuHost" Height="6" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Grid.Column="2" x:Name="MiniCpu" Text="—" Style="{StaticResource ValueSmall}" FontSize="11.5" MinWidth="34" TextAlignment="Right"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="MEM" Style="{StaticResource Label}"/>
+                        <Border Grid.Column="1" x:Name="MiniMemHost" Height="6" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Grid.Column="2" x:Name="MiniMem" Text="—" Style="{StaticResource ValueSmall}" FontSize="11.5" MinWidth="34" TextAlignment="Right"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="TEMP" Style="{StaticResource Label}"/>
+                        <TextBlock Grid.Column="1" x:Name="MiniTemp" Text="—" Style="{StaticResource ValueSmall}" FontSize="11.5"/>
+                    </Grid>
+                    <WrapPanel x:Name="Chips"/>
+                </StackPanel>
+
+                <ListBox x:Name="NavList" Background="Transparent" BorderThickness="0" Margin="6,0,6,0"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="NavList_SelectionChanged"/>
+            </DockPanel>
+        </Border>
+
+        <!-- ======================== page host -->
+        <Border Grid.Column="1" Padding="22,18,22,12" ClipToBounds="True">
+            <ContentControl x:Name="Host" Focusable="False"/>
+        </Border>
+
+        <!-- phosphor scanlines: a static tiled brush, drawn once by the GPU -->
+        <Rectangle x:Name="Scanlines" Grid.Column="1" IsHitTestVisible="False" Visibility="Collapsed">
+            <Rectangle.Fill>
+                <DrawingBrush TileMode="Tile" Viewport="0,0,4,3" ViewportUnits="Absolute" Stretch="None">
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Brush="#0DFFFFFF">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,4,1"/>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- ======================== status line -->
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="{DynamicResource Border}" BorderThickness="0,1,0,0" Padding="22,5">
+            <DockPanel>
+                <TextBlock x:Name="StatusRight" DockPanel.Dock="Right" Foreground="{DynamicResource Dim}" FontSize="11.5"
+                           FontFamily="{DynamicResource NumFont}"/>
+                <TextBlock x:Name="StatusText" Foreground="{DynamicResource Dim}" FontSize="12" TextTrimming="CharacterEllipsis" Text="Ready"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

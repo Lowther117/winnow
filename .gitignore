@@ -1,0 +1,14 @@
+bin/
+obj/
+dist/
+.dotnet/
+.vs/
+*.user
+build-win-log.txt
+winnow-selftest.txt
+winnow-crash.log
+winnow-log.txt
+winnow-settings.json
+winnow-journal.json
+winnow-catalogue.json
+.DS_Store
