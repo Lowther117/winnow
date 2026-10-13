@@ -96,7 +96,10 @@ public class Graph : FrameworkElement, IAnimated
         else FrameClock.Remove(this);
     }
 
-    public bool WantsFrame => _pushes > 1 && Settings.Current.SmoothGraphs;
+    // Only while the trace is gliding towards the newest sample (plus a little slack so the final,
+    // fully-slid frame is drawn); once it has arrived the picture is still until the next Push.
+    public bool WantsFrame => _pushes > 1 && Settings.Current.SmoothGraphs &&
+                              Environment.TickCount64 - _lastPushTicks < Math.Max(100, Settings.Current.RefreshMs) + 100;
 
     public GraphSeries AddSeries(string colorKey = "Graph1", bool fill = true, double thickness = 1.6, string name = "")
     {

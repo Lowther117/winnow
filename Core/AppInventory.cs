@@ -84,17 +84,20 @@ public static class AppInventory
 
     // ------------------------------------------------------------ Win32 programs
 
-    /// <summary>Every visible program from HKLM (64 and 32-bit) and HKCU. Slow-ish: call off the UI thread.</summary>
-    public static List<AppsProgram> ReadPrograms()
+    /// <summary>Every visible program from HKLM (64 and 32-bit) and HKCU. Slow-ish: call off the UI thread.
+    /// includeHidden also returns SystemComponent / ParentKeyName entries (updates, shared runtimes and
+    /// components) - not for showing, but so "is anything else using this folder?" checks see them.</summary>
+    public static List<AppsProgram> ReadPrograms(bool includeHidden = false)
     {
         var list = new List<AppsProgram>();
-        ReadUninstallKey(Registry.LocalMachine, "HKLM", UninstallPath, true, false, list);
-        ReadUninstallKey(Registry.LocalMachine, "HKLM", UninstallPath32, true, true, list);
-        ReadUninstallKey(Registry.CurrentUser, "HKCU", UninstallPath, false, false, list);
+        ReadUninstallKey(Registry.LocalMachine, "HKLM", UninstallPath, true, false, list, includeHidden);
+        ReadUninstallKey(Registry.LocalMachine, "HKLM", UninstallPath32, true, true, list, includeHidden);
+        ReadUninstallKey(Registry.CurrentUser, "HKCU", UninstallPath, false, false, list, includeHidden);
         return list.OrderBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
     }
 
-    static void ReadUninstallKey(RegistryKey root, string hive, string path, bool machine, bool is32, List<AppsProgram> into)
+    static void ReadUninstallKey(RegistryKey root, string hive, string path, bool machine, bool is32, List<AppsProgram> into,
+                                 bool includeHidden)
     {
         try
         {
@@ -108,8 +111,8 @@ public static class AppInventory
                     if (s == null) continue;
                     string name = Str(s, "DisplayName").Trim();
                     if (name.Length == 0) continue;
-                    if (Int(s, "SystemComponent") == 1) continue;
-                    if (Str(s, "ParentKeyName").Length > 0) continue;
+                    if (!includeHidden && Int(s, "SystemComponent") == 1) continue;
+                    if (!includeHidden && Str(s, "ParentKeyName").Length > 0) continue;
                     var p = new AppsProgram
                     {
                         Name = name,
@@ -268,6 +271,8 @@ public static class AppInventory
     {
         var (exe, args) = UninstallCommand(p);
         if (string.IsNullOrEmpty(exe)) return (false, null, "This program has no uninstall command in the registry.");
+        // A bare name such as "msiexec.exe" must come from System32, not from Winnow's own folder.
+        if (!Path.IsPathRooted(exe) && File.Exists(Paths.SystemExe(exe))) exe = Paths.SystemExe(exe);
         try
         {
             var psi = new ProcessStartInfo(exe, args ?? "") { UseShellExecute = true, WorkingDirectory = Paths.WindowsDir };

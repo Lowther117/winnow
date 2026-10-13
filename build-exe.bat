@@ -106,6 +106,16 @@ rem 3. Prove it runs before saying it works. Winnow is a windowed app, so
 rem the self-test writes winnow-selftest.txt beside the exe and that is
 rem shown here. The self-test does not ask for admin rights.
 rem ---------------------------------------------------------------------
+rem An ARM64 exe cannot run on an Intel/AMD PC, so its self-test is skipped there.
+set "HOSTARCH=%PROCESSOR_ARCHITECTURE%"
+if defined PROCESSOR_ARCHITEW6432 set "HOSTARCH=%PROCESSOR_ARCHITEW6432%"
+if /i "%RID%"=="win-arm64" if /i not "%HOSTARCH%"=="ARM64" (
+    echo.
+    echo == Self-test skipped: an ARM64 exe cannot run on this %HOSTARCH% PC.
+    echo ---- selftest skipped ^(arm64 exe on %HOSTARCH% host^) ---->> "%LOG%"
+    goto :done
+)
+
 echo.
 echo == Testing the exe
 if exist "%DIST%\winnow-selftest.txt" del /q "%DIST%\winnow-selftest.txt"
@@ -122,6 +132,7 @@ type "%DIST%\winnow-selftest.txt" >> "%LOG%"
 findstr /c:"RESULT: all checks passed" "%DIST%\winnow-selftest.txt" >nul
 if errorlevel 1 goto :selftestbad
 
+:done
 echo.
 echo Done: %EXE%
 echo.

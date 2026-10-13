@@ -592,14 +592,14 @@ public static class CleanupCatalog
     {
         foreach (var svc in new[] { "wuauserv", "bits" })
         {
-            var q = await Shell.RunAsync("sc.exe", "query " + svc, 15_000);
+            var q = await Shell.RunAsync(Paths.SystemExe("sc.exe"), "query " + svc, 15_000);
             if (!q.Ok || IsStopped(q.Output)) continue;   // not installed, or already stopped
             c.Say($"  stopping {svc}…");
             c.Restart.Add(svc);
-            await Shell.RunAsync("sc.exe", "stop " + svc, 30_000);
+            await Shell.RunAsync(Paths.SystemExe("sc.exe"), "stop " + svc, 30_000);
             for (int i = 0; i < 60; i++)
             {
-                var s = await Shell.RunAsync("sc.exe", "query " + svc, 15_000);
+                var s = await Shell.RunAsync(Paths.SystemExe("sc.exe"), "query " + svc, 15_000);
                 if (IsStopped(s.Output)) break;
                 await Task.Delay(500);
             }
@@ -610,7 +610,7 @@ public static class CleanupCatalog
     {
         foreach (var svc in c.Restart)
         {
-            var r = await Shell.RunAsync("sc.exe", "start " + svc, 30_000);
+            var r = await Shell.RunAsync(Paths.SystemExe("sc.exe"), "start " + svc, 30_000);
             c.Say(r.Ok ? $"  started {svc} again" : $"  could not start {svc} again: {r.Output.Trim()}");
         }
     }
@@ -668,19 +668,28 @@ public static class CleanupCatalog
         }
 
         // Tick only "Previous Windows installation(s)" for one Disk Cleanup run, then untick it.
+        // Written directly (not journalled): it is a one-off flag in a free slot, removed straight after the run.
         int slot = FreeSageSlot();
         string valueName = "StateFlags" + slot.ToString("0000", CultureInfo.InvariantCulture);
-        var set = Change.SetRegistry("HKLM", PreviousInstallations, valueName, 2, RegistryValueKind.DWord,
-                                     "disk.windowsold", "Select 'Previous Windows installation(s)' for one Disk Cleanup run");
-        if (!set.ok)
+        try
         {
-            c.Say("  could not select the Disk Cleanup handler: " + set.message);
+            using var hk = Registry.LocalMachine.CreateSubKey(PreviousInstallations, true);
+            hk.SetValue(valueName, 2, RegistryValueKind.DWord);
+        }
+        catch (Exception ex)
+        {
+            c.Say("  could not select the Disk Cleanup handler: " + ex.Message);
             return;
         }
         c.Say($"  running cleanmgr /sagerun:{slot} - this can take several minutes…");
         c.Progress("Removing Windows.old with Disk Cleanup…");
         var r = await Shell.RunAsync(CleanMgrExe, "/sagerun:" + slot.ToString(CultureInfo.InvariantCulture), 3_600_000);
-        Change.DeleteRegistryValue("HKLM", PreviousInstallations, valueName, "disk.windowsold", "Remove the one-off Disk Cleanup selection");
+        try
+        {
+            using var hk = Registry.LocalMachine.OpenSubKey(PreviousInstallations, true);
+            hk?.DeleteValue(valueName, false);
+        }
+        catch (Exception ex) { Log.Write("windows.old flag cleanup: " + ex.Message); }
         if (r.TimedOut) c.Say("  Disk Cleanup did not finish within an hour.");
 
         long before = c.Measured?.Bytes ?? 0, beforeFiles = c.Measured?.Files ?? 0;

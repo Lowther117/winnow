@@ -77,7 +77,7 @@ public static class BloatList
         new("Microsoft.NetworkSpeedTest", "Network Speed Test", Safe, true, "Old Bing speed test app."),
         new("Microsoft.windowscommunicationsapps", "Mail and Calendar", Safe, true, "The old Mail and Calendar apps, which stopped syncing at the end of 2024."),
         new("Microsoft.PCManager", "PC Manager", Safe, true, "Microsoft's clean-up and 'boost' app."),
-        new("MicrosoftCorporationII.MicrosoftFamily", "Microsoft Family Safety", Safe, true, "Parental controls dashboard. Keep it if you manage a child's account."),
+        new("MicrosoftCorporationII.MicrosoftFamily", "Microsoft Family Safety", KeepIfUsed, false, "Parental controls dashboard. Keep it if you manage a child's account."),
         new("Microsoft.OutlookForWindows", "Outlook (new)", KeepIfUsed, false, "The new Outlook for Windows mail app. Classic Outlook from Microsoft 365 is separate."),
         new("MSTeams", "Microsoft Teams", KeepIfUsed, false, "The current Teams app, for work, school and personal accounts."),
         new("MicrosoftTeams", "Teams Chat (personal)", Safe, true, "The older personal Teams chat that came with Windows 11 22H2."),

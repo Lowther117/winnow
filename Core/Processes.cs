@@ -153,7 +153,8 @@ public static class ProcessActions
         finally { Native.CloseHandle(h); }
     }
 
-    static (bool ok, string message) With(int pid, long createTime, uint access, Func<IntPtr, bool> act, string verb)
+    static (bool ok, string message) With(int pid, long createTime, uint access, Func<IntPtr, bool> act, string verb,
+                                          bool refuseCritical = false)
     {
         if (!IsSameProcess(pid, createTime)) return (false, "that process has already exited");
         IntPtr h = Native.OpenProcess(access | Native.PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
@@ -163,13 +164,20 @@ public static class ProcessActions
             // check again on the handle we will actually use
             if (!Native.GetProcessTimes(h, out long c, out _, out _, out _) || c != createTime)
                 return (false, "that process has already exited");
+            if (refuseCritical)
+            {
+                if (pid == Environment.ProcessId)
+                    return (false, "that is Winnow itself - close it from its own window instead");
+                if (Native.IsProcessCritical(h, out bool critical) && critical)
+                    return (false, "Windows marks that process as critical - ending or suspending it would crash the PC");
+            }
             return act(h) ? (true, verb) : (false, $"{verb} failed ({Marshal.GetLastWin32Error()})");
         }
         finally { Native.CloseHandle(h); }
     }
 
     public static (bool ok, string message) Kill(ProcSample p) =>
-        With(p.Pid, p.CreateTime, Native.PROCESS_TERMINATE, h => Native.TerminateProcess(h, 1), "ended");
+        With(p.Pid, p.CreateTime, Native.PROCESS_TERMINATE, h => Native.TerminateProcess(h, 1), "ended", refuseCritical: true);
 
     /// <summary>Kill a process and every descendant (descendants first).</summary>
     public static (int ok, int failed) KillTree(ProcSample root, IReadOnlyList<ProcSample> all)
@@ -205,7 +213,7 @@ public static class ProcessActions
     }
 
     public static (bool ok, string message) Suspend(ProcSample p) =>
-        With(p.Pid, p.CreateTime, Native.PROCESS_SUSPEND_RESUME, h => Native.NtSuspendProcess(h) == 0, "suspended");
+        With(p.Pid, p.CreateTime, Native.PROCESS_SUSPEND_RESUME, h => Native.NtSuspendProcess(h) == 0, "suspended", refuseCritical: true);
 
     public static (bool ok, string message) Resume(ProcSample p) =>
         With(p.Pid, p.CreateTime, Native.PROCESS_SUSPEND_RESUME, h => Native.NtResumeProcess(h) == 0, "resumed");

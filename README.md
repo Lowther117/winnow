@@ -33,7 +33,7 @@ There is no Mac build. Winnow only does Windows things, so this is a deliberate 
 - **Install**: a Ninite-style tick list of about 140 popular apps installed silently with winget, plus "upgrade all". Add your own apps with **Customise list…**, which writes `winnow-catalogue.json` beside the exe for you to edit.
 
 **Privacy**
-- 41 switches for telemetry, advertising, suggestions, Bing in Start, Copilot, Recall, Click to Do, activity history, Edge's data collection, Delivery Optimisation peering and more. Each is checked against Microsoft's own policy documentation, and the source is noted in the code.
+- 47 switches for telemetry, advertising, suggestions, Bing in Start, Copilot, Recall, Click to Do, activity history, Edge's data collection, Delivery Optimisation peering and more. Each is checked against Microsoft's own policy documentation, and the source is noted in the code.
 - **Light / Recommended / Aggressive** presets. Each switch shows whether it's currently applied on this PC.
 - A System Restore point is created before the first change in a session. You can switch that off in Settings.
 - **History** lists every change Winnow has made on any page. Each change can be undone on its own, back to the exact value it replaced.

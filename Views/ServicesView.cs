@@ -102,6 +102,9 @@ public static class SvcQuery
         "MpsSvc", "WinDefend", "SecurityHealthService", "wuauserv", "CryptSvc", "TrustedInstaller", "ProfSvc", "Power",
         "PlugPlay", "Schedule", "gpsvc", "AudioSrv", "AudioEndpointBuilder", "Themes", "UserManager", "CoreMessagingRegistrar",
         "StateRepository", "BrokerInfrastructure", "SystemEventsBroker", "TimeBrokerSvc", "WdNisSvc", "wscsvc",
+        // Elevation (Winnow's own UAC prompt), Windows Update, installers, Store apps, keys/credentials, networking.
+        "Appinfo", "BITS", "UsoSvc", "WaaSMedicSvc", "msiserver", "AppXSvc", "ClipSVC", "KeyIso", "VaultSvc",
+        "netprofm", "NlaSvc", "WlanSvc",
     };
 
     // Only services Microsoft itself documents as diagnostic-data components
@@ -727,7 +730,7 @@ public sealed class ServicesView : UserControl, IView
 
     async Task<bool> ScStartAsync(SvcRow r, List<string> errors)
     {
-        var res = await Shell.RunAsync("sc.exe", "start \"" + r.Name + "\"", 30_000);
+        var res = await Shell.RunAsync(Paths.SystemExe("sc.exe"), "start \"" + r.Name + "\"", 30_000);
         if (!res.Ok && !res.Output.Contains("1056"))   // 1056 = already running
         {
             errors.Add(r.DisplayName + ": " + Brief(res.Output));
@@ -741,7 +744,7 @@ public sealed class ServicesView : UserControl, IView
 
     async Task<bool> ScStopAsync(SvcRow r, List<string> errors)
     {
-        var res = await Shell.RunAsync("sc.exe", "stop \"" + r.Name + "\"", 30_000);
+        var res = await Shell.RunAsync(Paths.SystemExe("sc.exe"), "stop \"" + r.Name + "\"", 30_000);
         if (!res.Ok && !res.Output.Contains("1062"))   // 1062 = not started
         {
             string why = res.Output.Contains("1051") ? "other running services depend on it - stop those first" : Brief(res.Output);

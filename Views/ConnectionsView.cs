@@ -509,13 +509,19 @@ public sealed class ConnectionsView : UserControl, IView
         string path = r.ExePath;
         if (string.IsNullOrEmpty(path)) return;
         string exe = System.IO.Path.GetFileName(path);
+        // A short hash of the full path keeps two different programs with the same file name
+        // (C:\A\app.exe, D:\B\app.exe) on separate rules. Undo removes by the name stored in the journal,
+        // so rules made by older versions ("Winnow block app.exe") still undo as before.
+        string tag = System.Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
+                         System.Text.Encoding.UTF8.GetBytes(path.ToLowerInvariant())))[..8].ToLowerInvariant();
+        string ruleName = "Winnow block " + exe + " (" + tag + ")";
         if (!Elevation.IsAdmin)
         {
             Ui.Info("Adding a firewall rule needs administrator rights. Restart Winnow and accept the prompt, then try again.");
             return;
         }
         string msg = $"Block all outbound network traffic from {exe}?\n\n{path}\n\n" +
-                     $"Winnow adds a Windows Firewall rule named \"Winnow block {exe}\". The program will not be able to connect out " +
+                     $"Winnow adds a Windows Firewall rule named \"{ruleName}\". The program will not be able to connect out " +
                      "until the rule is removed. You can undo it from the change history (Settings › Open change history).";
         string winDir = Paths.WindowsDir;
         if (!string.IsNullOrEmpty(winDir) && path.StartsWith(winDir, StringComparison.OrdinalIgnoreCase))
@@ -525,7 +531,7 @@ public sealed class ConnectionsView : UserControl, IView
 
         Ui.Run(async () =>
         {
-            var (ok, message) = await Change.AddFirewallBlockAsync("Winnow block " + exe, path, null, "firewall." + exe, "Block outbound for " + exe);
+            var (ok, message) = await Change.AddFirewallBlockAsync(ruleName, path, null, "firewall." + exe + "." + tag, "Block outbound for " + path);
             Status.Set(ok ? $"Outbound traffic from {exe} is now blocked" : "Could not add the firewall rule: " + message,
                        ok ? StatusKind.Good : StatusKind.Bad);
         }, "Firewall block");

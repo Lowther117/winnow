@@ -65,7 +65,24 @@ public static class Journal
 
     static void Save()
     {
-        try { File.WriteAllText(Paths.JournalFile, JsonSerializer.Serialize(_entries, Opts)); }
+        // Write a temp file, then swap it in (keeping the previous journal as .bak), so a crash or
+        // power cut mid-write can never leave a half-written undo history.
+        try
+        {
+            string tmp = Paths.JournalFile + ".tmp";
+            File.WriteAllText(tmp, JsonSerializer.Serialize(_entries, Opts));
+            if (!File.Exists(Paths.JournalFile)) File.Move(tmp, Paths.JournalFile);
+            else
+            {
+                try { File.Replace(tmp, Paths.JournalFile, Paths.JournalFile + ".bak", ignoreMetadataErrors: true); }
+                catch (Exception) when (File.Exists(tmp))
+                {
+                    // Some drives (FAT, network shares) cannot do an atomic replace: fall back to a plain overwrite.
+                    File.Copy(tmp, Paths.JournalFile, overwrite: true);
+                    File.Delete(tmp);
+                }
+            }
+        }
         catch (Exception ex) { Log.Write("journal save: " + ex.Message); }
     }
 
@@ -271,32 +288,34 @@ public static class Change
         if (before == mode && !stopNow) return (true, "already " + mode);
         if (before != mode)
         {
-            Journal.Add(new JournalEntry
-            {
-                Group = group, Description = description, Kind = "Service", Path = name,
-                BeforeExists = true, BeforeData = before, AfterData = mode,
-            });
-            var r = await Shell.RunAsync("sc.exe", $"config \"{name}\" start= {ScStart(mode)}", 30_000);
+            var r = await Shell.RunAsync(Paths.SystemExe("sc.exe"), $"config \"{name}\" start= {ScStart(mode)}", 30_000);
             if (!r.Ok)
             {
                 // Protected services refuse sc.exe; the registry value still takes effect at next boot.
                 try
                 {
                     using var k = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + name, true);
-                    k?.SetValue("Start", RegStart(mode), RegistryValueKind.DWord);
-                    if (mode == "AutomaticDelayed") k?.SetValue("DelayedAutostart", 1, RegistryValueKind.DWord);
+                    if (k == null) return (false, "sc.exe: " + r.Output.Trim() + " / registry: service key not found");
+                    k.SetValue("Start", RegStart(mode), RegistryValueKind.DWord);
+                    k.SetValue("DelayedAutostart", mode == "AutomaticDelayed" ? 1 : 0, RegistryValueKind.DWord);
                 }
                 catch (Exception ex) { return (false, "sc.exe: " + r.Output.Trim() + " / registry: " + ex.Message); }
             }
+            // Journal only once the change has actually been made, so undo never lists a change that failed.
+            Journal.Add(new JournalEntry
+            {
+                Group = group, Description = description, Kind = "Service", Path = name,
+                BeforeExists = true, BeforeData = before, AfterData = mode,
+            });
         }
         if (stopNow || mode == "Disabled")
-            await Shell.RunAsync("sc.exe", $"stop \"{name}\"", 30_000);
+            await Shell.RunAsync(Paths.SystemExe("sc.exe"), $"stop \"{name}\"", 30_000);
         return (true, "set to " + mode);
     }
 
     internal static async Task<(bool ok, string message)> RestoreServiceAsync(JournalEntry e)
     {
-        var r = await Shell.RunAsync("sc.exe", $"config \"{e.Path}\" start= {ScStart(e.BeforeData)}", 30_000);
+        var r = await Shell.RunAsync(Paths.SystemExe("sc.exe"), $"config \"{e.Path}\" start= {ScStart(e.BeforeData)}", 30_000);
         if (r.Ok) return (true, "restored to " + e.BeforeData);
         try
         {

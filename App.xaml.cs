@@ -10,6 +10,11 @@ public partial class App : Application
 {
     public static string[] Args { get; private set; } = System.Array.Empty<string>();
 
+    // Held for the life of the window so a second launch brings this one forward instead of opening another.
+    const string SingleInstanceName = @"Local\Winnow.SingleInstance";
+    static Mutex _singleInstance;
+    static bool _noSaveOnExit;   // selftest / uitest / second copy: never overwrite the user's settings file
+
     protected override void OnStartup(StartupEventArgs e)
     {
         Args = e.Args;
@@ -23,6 +28,7 @@ public partial class App : Application
         if (e.Args.Any(a => a.Equals("selftest", StringComparison.OrdinalIgnoreCase)))
         {
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            _noSaveOnExit = true;
             int code = SelfTest.Run();
             Shutdown(code);
             return;
@@ -34,6 +40,7 @@ public partial class App : Application
         if (e.Args.Any(a => a.Equals("uitest", StringComparison.OrdinalIgnoreCase)))
         {
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            _noSaveOnExit = true;
             Settings.Current.PawnIoAutoInstall = false;
             Settings.Current.Theme = "phosphor";
             Palette.Apply("phosphor");
@@ -46,15 +53,28 @@ public partial class App : Application
             return;
         }
 
+        // One Winnow at a time: a second launch brings the open window forward and exits.
+        if (!TakeSingleInstance())
+        {
+            _noSaveOnExit = true;
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            ShowExistingInstance();
+            Shutdown(0);
+            return;
+        }
+
         // One UAC prompt, then the elevated copy carries on. If the user says no, run limited.
         if (!Elevation.IsAdmin && !e.Args.Contains("--elevated") && !e.Args.Contains("--no-elevate"))
         {
+            // Let go of the single-instance lock first so the elevated copy can take it.
+            DropSingleInstance();
             if (Elevation.RelaunchElevated(e.Args))
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 Shutdown(0);
                 return;
             }
+            TakeSingleInstance();   // UAC refused: carry on limited, still as the only copy
         }
 
         try
@@ -90,8 +110,54 @@ public partial class App : Application
         try { Sampler.Stop(); } catch { }
         try { NetEtw.Stop(); } catch { }
         try { Sensors.Stop(); } catch { }
-        try { Settings.Save(); } catch { }
+        if (!_noSaveOnExit) { try { Settings.Save(); } catch { } }
+        DropSingleInstance();
         base.OnExit(e);
+    }
+
+    /// <summary>True when this process now holds the single-instance lock (or the check itself failed).</summary>
+    static bool TakeSingleInstance()
+    {
+        try
+        {
+            var m = new Mutex(true, SingleInstanceName, out bool createdNew);
+            if (createdNew) { _singleInstance = m; return true; }
+            m.Dispose();
+            return false;
+        }
+        catch (UnauthorizedAccessException) { return false; }   // held by an elevated Winnow this copy cannot open
+        catch (Exception ex) { Log.Write("single instance: " + ex.Message); return true; }   // never block startup on this
+    }
+
+    static void DropSingleInstance()
+    {
+        var m = _singleInstance;
+        _singleInstance = null;
+        if (m == null) return;
+        try { m.ReleaseMutex(); } catch { }
+        try { m.Dispose(); } catch { }
+    }
+
+    /// <summary>Restore and focus the other Winnow's window; say so if it cannot be found.</summary>
+    static void ShowExistingInstance()
+    {
+        try
+        {
+            using var me = System.Diagnostics.Process.GetCurrentProcess();
+            foreach (var p in System.Diagnostics.Process.GetProcessesByName(me.ProcessName))
+            {
+                using (p)
+                {
+                    if (p.Id == me.Id) continue;
+                    IntPtr h = p.MainWindowHandle;
+                    if (h == IntPtr.Zero) continue;
+                    if (Native.IsIconic(h)) Native.ShowWindow(h, Native.SW_RESTORE);
+                    if (Native.SetForegroundWindow(h)) return;
+                }
+            }
+        }
+        catch { }
+        MessageBox.Show("Winnow is already running.", "Winnow", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     void OnDispatcherException(object sender, DispatcherUnhandledExceptionEventArgs e)

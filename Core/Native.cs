@@ -71,6 +71,10 @@ internal static class Native
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern bool QueryFullProcessImageName(IntPtr process, uint flags, StringBuilder name, ref int size);
 
+    /// <summary>True in <paramref name="critical"/> when ending the process blue-screens Windows (csrss, wininit, smss...).</summary>
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool IsProcessCritical(IntPtr process, out bool critical);
+
     [StructLayout(LayoutKind.Sequential)]
     public struct MEMORYSTATUSEX
     {
@@ -138,6 +142,18 @@ internal static class Native
 
     [DllImport("user32.dll", SetLastError = true)]
     public static extern bool DestroyIcon(IntPtr icon);
+
+    // Bringing an already-open Winnow window to the front (single-instance launch).
+    public const int SW_RESTORE = 9;
+
+    [DllImport("user32.dll")]
+    public static extern bool SetForegroundWindow(IntPtr hwnd);
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hwnd, int cmd);
+
+    [DllImport("user32.dll")]
+    public static extern bool IsIconic(IntPtr hwnd);
 
     [DllImport("shell32.dll")]
     public static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid id, uint flags, IntPtr token, out IntPtr path);

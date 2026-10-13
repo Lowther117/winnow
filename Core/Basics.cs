@@ -45,6 +45,14 @@ public static class Paths
     }
 
     public static string WindowsDir => Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+
+    /// <summary>Full path to a Windows program in System32 (e.g. "sc.exe"), so an elevated Winnow never
+    /// picks up a same-named exe from its own folder (usually Downloads).</summary>
+    public static string SystemExe(string exe) => Path.Combine(WindowsDir, "System32", exe);
+
+    /// <summary>Full path to a program in the Windows folder itself (e.g. "explorer.exe").</summary>
+    public static string WindowsExe(string exe) => Path.Combine(WindowsDir, exe);
+
     public static string ProgramData => Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
     public static string LocalAppData => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
     public static string RoamingAppData => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -285,7 +293,8 @@ public static class Shell
             }
             if (p.HasExited)
             {
-                p.WaitForExit(); // flush async output
+                // Flush async output, but never hang on a pipe a stray grandchild still holds open.
+                p.WaitForExit(5000);
                 result.ExitCode = p.ExitCode;
             }
         }
@@ -346,8 +355,8 @@ public static class Shell
     {
         try
         {
-            if (File.Exists(path)) Process.Start("explorer.exe", "/select,\"" + path + "\"");
-            else if (Directory.Exists(path)) Process.Start("explorer.exe", "\"" + path + "\"");
+            if (File.Exists(path)) Process.Start(Paths.WindowsExe("explorer.exe"), "/select,\"" + path + "\"");
+            else if (Directory.Exists(path)) Process.Start(Paths.WindowsExe("explorer.exe"), "\"" + path + "\"");
         }
         catch (Exception ex) { Log.Write("reveal: " + ex.Message); }
     }

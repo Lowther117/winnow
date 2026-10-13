@@ -493,7 +493,9 @@ public static class LeftoverScan
         // ---- what is installed
         progress?.Report("Reading installed programs…");
         var programs = AppInventory.ReadPrograms();
-        foreach (var p in programs)
+        // Hidden entries (SystemComponent / ParentKeyName: shared runtimes, components, updates) are never
+        // proposed as stale, but their names and folders still count as "in use".
+        foreach (var p in AppInventory.ReadPrograms(includeHidden: true))
         {
             known.AddName(p.Name);
             known.AddCompany(p.Publisher);
@@ -557,7 +559,17 @@ public static class LeftoverScan
             try
             {
                 if (Path.IsPathRooted(loc) && Directory.Exists(loc) && !IsNeverTouch(loc) && !known.InUse(loc))
-                    AddFolder(result, seenItems, loc, "High", "The uninstaller left " + focus.Name + "'s install folder behind", false, ct);
+                {
+                    // Only pre-tick (High) when the folder is plainly the product's own, not a shared vendor folder
+                    // such as "C:\Program Files\Contoso" that other products from the same publisher may use.
+                    string folder = Norm(Path.GetFileName(loc.TrimEnd('\\')));
+                    string product = Norm(focus.Name), productBare = Norm(StripVersion(focus.Name));
+                    bool ownFolder = folder.Length >= 3 &&
+                        (folder == product || folder == productBare ||
+                         (productBare.Length >= 4 && folder.Contains(productBare)) || (product.Length >= 4 && folder.Contains(product)));
+                    AddFolder(result, seenItems, loc, ownFolder ? "High" : "Medium",
+                              "The uninstaller left " + focus.Name + "'s install folder behind", false, ct);
+                }
             }
             catch (OperationCanceledException) { throw; }
             catch { }
