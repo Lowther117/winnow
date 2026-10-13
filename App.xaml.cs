@@ -30,6 +30,22 @@ public partial class App : Application
 
         Settings.Load();
 
+        // "Winnow.exe uitest" - opens every page and screenshots it (used by the GitHub build). Looks, never changes.
+        if (e.Args.Any(a => a.Equals("uitest", StringComparison.OrdinalIgnoreCase)))
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            Settings.Current.PawnIoAutoInstall = false;
+            Settings.Current.Theme = "phosphor";
+            Palette.Apply("phosphor");
+            Journal.Load();
+            Sampler.Start();
+            Sensors.Start();
+            NetEtw.Start();
+            ServiceMap.Refresh(force: true);
+            Views.UiTest.Run(this);
+            return;
+        }
+
         // One UAC prompt, then the elevated copy carries on. If the user says no, run limited.
         if (!Elevation.IsAdmin && !e.Args.Contains("--elevated") && !e.Args.Contains("--no-elevate"))
         {

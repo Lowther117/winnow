@@ -24,6 +24,15 @@ jobs:
       - name: build-exe.bat
         shell: cmd
         run: call build-exe.bat x64
+      # Open every page on a real desktop session, screenshot it, and fail on any runtime fault.
+      - name: UI test
+        if: success()
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist\Winnow.exe -ArgumentList 'uitest' -PassThru
+          if (-not $p.WaitForExit(420000)) { $p.Kill(); Write-Host 'UI test timed out'; exit 1 }
+          if (Test-Path dist\winnow-uitest.txt) { Get-Content dist\winnow-uitest.txt } else { Write-Host 'no report'; exit 1 }
+          if (-not (Select-String -Path dist\winnow-uitest.txt -SimpleMatch 'RESULT: all pages opened' -Quiet)) { exit 1 }
       - name: Build log
         if: always()
         shell: pwsh
@@ -38,7 +47,8 @@ jobs:
           $tmp = Join-Path $env:RUNNER_TEMP 'cilog'
           New-Item -ItemType Directory -Force $tmp | Out-Null
           Set-Content -Path (Join-Path $tmp 'build-win-log.txt') -Value $log -Encoding utf8
-          if (Test-Path dist/winnow-selftest.txt) { Copy-Item dist/winnow-selftest.txt $tmp }
+          foreach ($f in 'winnow-selftest.txt','winnow-uitest.txt','winnow-crash.log','winnow-log.txt') { if (Test-Path "dist/$f") { Copy-Item "dist/$f" $tmp } }
+          Get-ChildItem dist -Filter 'uitest-*.png' -ErrorAction SilentlyContinue | Copy-Item -Destination $tmp
           Set-Location $tmp
           git init -q -b ci-log
           git config user.name 'github-actions'
