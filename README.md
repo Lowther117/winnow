@@ -12,7 +12,7 @@ Windows 11 and later only. C# / WPF on .NET 10, built into one self-contained `W
 |---|---|
 | `build-exe.bat` | **Windows.** Double-click to build `dist\Winnow.exe`. It fetches a private copy of the .NET 10 SDK into `.dotnet\` the first time if the PC has none (no admin needed, nothing installed system-wide), builds, then runs the exe's self-test. `build-exe.bat arm64` builds for Snapdragon PCs. |
 | `dist\Winnow.exe` | The app. Copy it anywhere and double-click. It asks for administrator rights once (UAC); say no and it runs in a limited, read-mostly mode. |
-| `.github/workflows/build.yml` | GitHub builds and self-tests every push on a clean Windows machine; the exe is attached to each run as a download. |
+| `.github/workflows/build.yml` | Every push is built on a clean Windows machine with the same `build-exe.bat`. Its self-test runs, then a UI test (`Winnow.exe uitest`) opens every page and fails the build on any runtime fault. The exe is attached to each run as a download, and the log and screenshots are pushed to the `ci-log` branch. |
 
 There is no Mac build. Winnow only does Windows things, so this is a deliberate exception to the usual Win + Mac rule.
 
