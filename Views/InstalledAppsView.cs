@@ -216,6 +216,8 @@ public sealed class InstalledAppsView : UserControl, IView
         _programGrid.Columns.Add(Col("Size (est.)", nameof(AppsProgram.SizeText), 85, nameof(AppsProgram.SizeSort), numeric: true));
         _programGrid.Columns.Add(Col("Scope", nameof(AppsProgram.Scope), 130));
         _programGrid.Columns.Add(Col("Location", nameof(AppsProgram.InstallLocation), 220));
+        _programGrid.Columns[0].MinWidth = 230;
+        _programGrid.Columns[1].MinWidth = 150;
         _programGrid.MouseDoubleClick += (_, e) =>
         {
             // only a double-click on a row, not on the header or scroll bar
@@ -424,6 +426,8 @@ public sealed class InstalledAppsView : UserControl, IView
         _storeGrid.Columns.Add(Col("Signed by", nameof(AppsStorePackage.SignatureKind), 80));
         _storeGrid.Columns.Add(Col("Provisioned", nameof(AppsStorePackage.ProvisionedText), 85));
         _storeGrid.Columns.Add(Col("Status", nameof(AppsStorePackage.Status), 140));
+        _storeGrid.Columns[0].MinWidth = 230;
+        _storeGrid.Columns[1].MinWidth = 150;
         Put(g, _storeGrid, 2);
 
         var foot = new StackPanel();
@@ -731,6 +735,7 @@ public sealed class InstalledAppsView : UserControl, IView
         _leftGrid.Columns.Add(Col("Modified", nameof(LeftoverItem.ModifiedText), 90, nameof(LeftoverItem.ModifiedSort)));
         _leftGrid.Columns.Add(Col("Why", nameof(LeftoverItem.Reason), 1.5, star: true));
         _leftGrid.Columns.Add(Col("Result", nameof(LeftoverItem.Status), 140));
+        foreach (var c in _leftGrid.Columns) if (c.Width.IsStar) c.MinWidth = 200;
         _leftGrid.MouseDoubleClick += (_, _) => OpenLeftover();
         Put(g, _leftGrid, 4);
         return g;

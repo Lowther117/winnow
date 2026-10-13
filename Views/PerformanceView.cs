@@ -971,6 +971,7 @@ public sealed class PerformanceView : UserControl, IView
         g.Columns.Add(Col("Value", nameof(PerfSensorRow.ValueText), nameof(PerfSensorRow.ValueNum), new DataGridLength(95), true));
         g.Columns.Add(Col("Min", nameof(PerfSensorRow.MinText), nameof(PerfSensorRow.MinNum), new DataGridLength(90), true));
         g.Columns.Add(Col("Max", nameof(PerfSensorRow.MaxText), nameof(PerfSensorRow.MaxNum), new DataGridLength(90), true));
+        foreach (var c in g.Columns) if (c.Width.IsStar) c.MinWidth = c.Header as string == "Hardware" ? 170 : 150;
         return g;
     }
 

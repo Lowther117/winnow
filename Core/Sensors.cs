@@ -148,16 +148,23 @@ public static class Sensors
     {
         foreach (ISensor s in hw.Sensors)
         {
+            // Without ring-0 access (PawnIO missing, or a virtual machine) the CPU's MSR-backed sensors read
+            // exactly 0 rather than nothing. A running CPU is never at 0 °C, 0 W, 0 MHz or 0 V, so an exact
+            // zero there is "no reading" - shown as a dash, never as a measurement.
+            string type = s.SensorType.ToString();
+            bool zeroMeansNone = type == "Temperature" ||
+                (hw.HardwareType == HardwareType.Cpu && type is "Power" or "Clock" or "Voltage" or "Current");
+            float? Val(float? v) { var c = Clean(v); return zeroMeansNone && c.HasValue && c.Value <= 0f ? null : c; }
             list.Add(new SensorReading
             {
                 Hardware = hw.Name,
                 HardwareType = hw.HardwareType.ToString(),
-                Type = s.SensorType.ToString(),
+                Type = type,
                 Name = s.Name,
                 Id = s.Identifier.ToString(),
-                Value = Clean(s.Value),
-                Min = Clean(s.Min),
-                Max = Clean(s.Max),
+                Value = Val(s.Value),
+                Min = Val(s.Min),
+                Max = Val(s.Max),
             });
         }
         foreach (IHardware sub in hw.SubHardware) AddHardware(list, sub);
