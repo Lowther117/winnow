@@ -10,6 +10,11 @@ on:
 permissions:
   contents: write
 
+# One build per branch at a time; a newer push cancels the older run.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows:
     runs-on: windows-latest
@@ -30,9 +35,21 @@ jobs:
         shell: pwsh
         run: |
           $p = Start-Process -FilePath dist\Winnow.exe -ArgumentList 'uitest' -PassThru
+          $null = $p.Handle   # keep the handle so ExitCode is readable after exit
           if (-not $p.WaitForExit(420000)) { $p.Kill(); Write-Host 'UI test timed out'; exit 1 }
           if (Test-Path dist\winnow-uitest.txt) { Get-Content dist\winnow-uitest.txt } else { Write-Host 'no report'; exit 1 }
+          if ($p.ExitCode -ne 0) { Write-Host "UI test exited with code $($p.ExitCode)"; exit 1 }
           if (-not (Select-String -Path dist\winnow-uitest.txt -SimpleMatch 'RESULT: all pages opened' -Quiet)) { exit 1 }
+      # The UI test report and page screenshots, kept whether the test passed or not.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Winnow-uitest
+          path: |
+            dist/winnow-uitest.txt
+            dist/uitest-*.png
+            dist/winnow-crash.log
+          if-no-files-found: ignore
       - name: Build log
         if: always()
         shell: pwsh
