@@ -3,7 +3,7 @@
   <!--
     Winnow - Windows 11 debloater and TMOG-style task manager.
     Built by build-exe.bat into one self-contained dist\Winnow.exe:
-      dotnet publish -c Release -r win-x64 --self-contained true
+      dotnet publish -c Release -r win-x64 (self-contained)
     Nothing needs installing on the PC that runs it.
   -->
 
