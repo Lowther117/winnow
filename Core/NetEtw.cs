@@ -24,6 +24,9 @@ public static class NetEtw
     static Dictionary<string, long[]> _perConn = new();      // "pid|remote|port" -> [recv, sent] cumulative
 
     public static bool Running { get; private set; }
+    /// <summary>Diagnostics: events seen since start (all / network / DNS / failed to parse).</summary>
+    public static long EventsSeen, NetEventsSeen, DnsEventsSeen, ParseFailures;
+    public static string LastUnparsed = "";
     public static string Status { get; private set; } = "Not started";
 
     public static void Start()
@@ -70,15 +73,17 @@ public static class NetEtw
     // Event IDs: TCP 10/26 send, 11/27 receive; UDP 42/58 send, 43/59 receive (v4/v6).
     static void OnEvent(TraceEvent e)
     {
+        Interlocked.Increment(ref EventsSeen);
         int id = (int)e.ID;
         if (e.ProviderGuid == DnsClient)
         {
-            if (id == 3008) OnDns(e);
+            if (id == 3008) { Interlocked.Increment(ref DnsEventsSeen); OnDns(e); }
             return;
         }
         bool send = id is 10 or 26 or 42 or 58;
         bool recv = id is 11 or 27 or 43 or 59;
         if (!send && !recv) return;
+        Interlocked.Increment(ref NetEventsSeen);
         try
         {
             int pid = Convert.ToInt32(e.PayloadByName("PID"));
@@ -95,7 +100,11 @@ public static class NetEtw
                 if (_perConn.Count > 20000) _perConn.Clear(); // never grow without bound
             }
         }
-        catch { /* malformed event - skip */ }
+        catch (Exception ex)
+        {
+            if (Interlocked.Increment(ref ParseFailures) <= 3)
+                LastUnparsed = $"id {id}: {ex.Message}; fields: {string.Join(",", e.PayloadNames ?? System.Array.Empty<string>())}";
+        }
     }
 
     // Event 3008 (query completed): QueryName + QueryResults like "type:  5 alias.example;::ffff:20.42.65.85;"

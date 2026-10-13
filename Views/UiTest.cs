@@ -44,6 +44,12 @@ public static class UiTest
         }
 
         var steps = new List<(string label, Action act, int waitMs)>();
+        // make some traffic so per-process network and DNS names have something to show
+        _ = Task.Run(async () =>
+        {
+            using var http = new HttpClient();
+            for (int n = 0; n < 6; n++) { try { await http.GetStringAsync("https://github.com/"); } catch { } await Task.Delay(1500); }
+        });
         foreach (var k in Keys)
         {
             string key = k;
@@ -66,6 +72,9 @@ public static class UiTest
         {
             if (i >= steps.Count)
             {
+                report.AppendLine($"ETW: {NetEtw.Status}; events {NetEtw.EventsSeen}, network {NetEtw.NetEventsSeen}, dns {NetEtw.DnsEventsSeen}, parse failures {NetEtw.ParseFailures} {NetEtw.LastUnparsed}");
+                var me = Sampler.Latest?.Processes.FirstOrDefault(p => p.Pid == Environment.ProcessId);
+                report.AppendLine($"Winnow's own network rate in the last sample: {Fmt.Rate(me?.NetBps)}; host for a github.com IP: {string.Join(", ", System.Net.Dns.GetHostAddresses("github.com").Select(a => a.ToString() + "=" + (NetEtw.HostFor(a.ToString()) ?? "none")))}");
                 string crash = "";
                 try { if (File.Exists(Paths.CrashLog)) crash = File.ReadAllText(Paths.CrashLog); } catch { }
                 if (crash.Length > 0)
