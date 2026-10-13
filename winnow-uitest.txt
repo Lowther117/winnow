@@ -1,0 +1,25 @@
+Winnow UI test  2026-10-13 21:56:13
+ok    opened summary
+ok    opened performance
+ok    opened processes
+ok    opened connections
+ok    opened recorder
+ok    opened startup
+ok    opened services
+ok    opened apps
+ok    opened disk
+ok    opened install
+ok    opened privacy
+ok    opened sysinfo
+ok    opened users
+ok    opened drivers
+ok    opened settings
+ok    opened summary-dark
+ok    opened summary-light
+ok    opened summary-phosphor
+ok    opened performance-cpu-cores
+ok    opened performance-thermals
+ok    opened privacy-history
+ETW: OK; events 1274, network 762, dns 47, parse failures 0 
+Winnow's own network rate in the last sample: 0 B/s; host for a github.com IP: 140.82.113.4=none
+RESULT: all pages opened
