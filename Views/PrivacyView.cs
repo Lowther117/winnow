@@ -580,8 +580,13 @@ public sealed class PrivacyView : UserControl, IView
         try
         {
             var args = Winnow.App.Args.Where(a => a != "--elevated" && a != "--no-elevate").ToArray();
+            Winnow.App.DropSingleInstance();   // let the elevated copy take the single-instance lock, as at start-up
             if (Elevation.RelaunchElevated(args)) Application.Current.Shutdown();
-            else Status.Set("Windows did not start Winnow as administrator (the prompt may have been declined).", StatusKind.Warn);
+            else
+            {
+                Winnow.App.TakeSingleInstance();
+                Status.Set("Windows did not start Winnow as administrator (the prompt may have been declined).", StatusKind.Warn);
+            }
         }
         catch (Exception ex)
         {

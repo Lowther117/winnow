@@ -485,8 +485,14 @@ public sealed class StartupView : UserControl, IView
         {
             (bool good, string message) res;
             if (r.E.Kind == "Folder")
-                res = Change.MoveFile(r.E.FilePath, Path.Combine(dir, r.E.ValueName), "startup." + r.E.Name,
+            {
+                // Both Startup folders can hold the same file name: never let one moved file overwrite another.
+                string dest = Path.Combine(dir, r.E.ValueName);
+                for (int n = 2; File.Exists(dest); n++)
+                    dest = Path.Combine(dir, Path.GetFileNameWithoutExtension(r.E.ValueName) + " (" + n + ")" + Path.GetExtension(r.E.ValueName));
+                res = Change.MoveFile(r.E.FilePath, dest, "startup." + r.E.Name,
                     "Remove startup file: " + r.E.Name + " (moved to " + dir + ")");
+            }
             else
                 res = Change.DeleteRegistryValue(r.E.Hive, r.E.KeyPath, r.E.ValueName, "startup." + r.E.Name,
                     "Remove startup entry: " + r.E.Name + " from " + r.E.Hive + "\\" + r.E.KeyPath);

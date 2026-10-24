@@ -100,9 +100,20 @@ public sealed class Settings
         Current.RecorderMinutes = Math.Clamp(Current.RecorderMinutes, 5, 240);
     }
 
+    static readonly object _saveLock = new();
+
     public static void Save()
     {
-        try { File.WriteAllText(Paths.SettingsFile, JsonSerializer.Serialize(Current, Opts)); }
+        // Write a temp file, then swap it in, so a crash or power cut mid-write cannot leave a truncated settings file.
+        try
+        {
+            lock (_saveLock)
+            {
+                string tmp = Paths.SettingsFile + ".tmp";
+                File.WriteAllText(tmp, JsonSerializer.Serialize(Current, Opts));
+                File.Move(tmp, Paths.SettingsFile, overwrite: true);
+            }
+        }
         catch (Exception ex) { Log.Write("settings save: " + ex.Message); }
     }
 
@@ -340,7 +351,19 @@ public static class Shell
     {
         if (string.IsNullOrEmpty(a)) return "\"\"";
         if (a.IndexOfAny(new[] { ' ', '\t', '"' }) < 0) return a;
-        return "\"" + a.Replace("\"", "\\\"") + "\"";
+        // CommandLineToArgvW rules: backslashes are literal unless they come before a quote, so a run of
+        // them is doubled before an escaped quote and before the closing quote (e.g. "C:\My Dir\\").
+        var sb = new StringBuilder("\"");
+        int slashes = 0;
+        foreach (char c in a)
+        {
+            if (c == '\\') { slashes++; continue; }
+            sb.Append('\\', c == '"' ? slashes * 2 + 1 : slashes);
+            sb.Append(c);
+            slashes = 0;
+        }
+        sb.Append('\\', slashes * 2).Append('"');
+        return sb.ToString();
     }
 
     /// <summary>Open a folder or URL with the shell.</summary>

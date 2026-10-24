@@ -116,7 +116,7 @@ public partial class App : Application
     }
 
     /// <summary>True when this process now holds the single-instance lock (or the check itself failed).</summary>
-    static bool TakeSingleInstance()
+    internal static bool TakeSingleInstance()
     {
         try
         {
@@ -129,7 +129,7 @@ public partial class App : Application
         catch (Exception ex) { Log.Write("single instance: " + ex.Message); return true; }   // never block startup on this
     }
 
-    static void DropSingleInstance()
+    internal static void DropSingleInstance()
     {
         var m = _singleInstance;
         _singleInstance = null;

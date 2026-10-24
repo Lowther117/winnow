@@ -89,6 +89,9 @@ public static class Sensors
 
             lock (_gate)
             {
+                // Stop() ran during the slow first start (e.g. the PawnIO install): opening a Computer now would
+                // leave one nobody closes.
+                if (_stop) return;
                 _computer = new Computer
                 {
                     IsCpuEnabled = true,
