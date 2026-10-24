@@ -39,8 +39,8 @@ if /i "%~1"=="x64" set "RID=win-x64"
 if /i "%~1"=="arm64" set "RID=win-arm64"
 
 echo Winnow build> "%LOG%"
-echo %DATE% %TIME%>> "%LOG%"
-echo target %RID%>> "%LOG%"
+>> "%LOG%" echo %DATE% %TIME%
+>> "%LOG%" echo target %RID%
 echo.
 echo Building Winnow.exe for %RID%. The first build takes a few minutes.
 echo Detail goes to build-win-log.txt.

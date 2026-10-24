@@ -126,10 +126,13 @@ public static class ProcessInfo
             Native.SHGetFileInfo(path, 0, ref info, (uint)Marshal.SizeOf<Native.SHFILEINFO>(), Native.SHGFI_ICON | Native.SHGFI_SMALLICON);
             if (info.hIcon != IntPtr.Zero)
             {
-                var bs = Imaging.CreateBitmapSourceFromHIcon(info.hIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                bs.Freeze();
-                img = bs;
-                Native.DestroyIcon(info.hIcon);
+                try
+                {
+                    var bs = Imaging.CreateBitmapSourceFromHIcon(info.hIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                    bs.Freeze();
+                    img = bs;
+                }
+                finally { Native.DestroyIcon(info.hIcon); }
             }
         }
         catch { }
