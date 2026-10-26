@@ -1,0 +1,35 @@
+Winnow build
+Mon 10/26/2026 20:41:09.65
+target win-x64
+10.0.403
+---- dotnet publish ----
+  Determining projects to restore...
+  Restored D:\a\winnow\winnow\Winnow.csproj (in 16.92 sec).
+  Winnow -> D:\a\winnow\winnow\bin\Release\net10.0-windows\win-x64\Winnow.dll
+  Winnow -> D:\a\winnow\winnow\dist\
+---- selftest ----
+Winnow self-test
+  version 1.0.0.0  ·  2026-10-26 20:43:23
+  Windows Server 2025 Datacenter 24H2 (build 26100.33650) - ServerDatacenter
+  exe folder D:\a\winnow\winnow\dist
+  administrator: yes
+
+  ok    Windows version: Windows Server 2025 Datacenter 24H2 (build 26100.33650) - ServerDatacenter
+  ok    CPU: 4% over 4 logical processors, 3065 MHz
+  ok    memory: 2.97 GB of 16.0 GB in use
+  ok    processes: 144 via NtQuerySystemInformation
+  ok    disks: 0 C: 13%, 1 D: 0%
+  ok    network: 11 active adapter(s)
+  ok    GPU: 9% busiest engine
+  ok    sensors library: 4 device(s), 61 sensors, 8 temperature readings without admin
+  note  PawnIO driver: not installed yet - Winnow installs it on first run (as administrator) for CPU temperatures and power
+  ok    WMI: 259 services
+  ok    installed programs: 458 uninstall entries
+  ok    winget: C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps\winget.exe
+  ok    PowerShell: runs
+  ok    install catalogue: 23481 bytes embedded
+  ok    downloads folder: C:\Users\runneradmin\Downloads
+
+  4040 ms
+RESULT: all checks passed
+
