@@ -10,6 +10,7 @@ public sealed class SettingsView : UserControl, IView
     readonly TextBlock _saveDir = new() { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
     readonly TextBlock _sensorState = new() { TextWrapping = TextWrapping.Wrap };
     readonly Button _pawnBtn;
+    bool _pawnBusy;            // an install is running: status refreshes must not re-enable the button
 
     public SettingsView()
     {
@@ -155,20 +156,44 @@ public sealed class SettingsView : UserControl, IView
 
     void RefreshSensorState()
     {
-        bool pawn = Sensors.IsPawnIoInstalled();
-        _sensorState.Text = $"Sensors: {Sensors.Status}\nPawnIO driver: {(pawn ? "installed" : "not installed")}" +
+        var pawn = Sensors.PawnIoState();
+        string state = pawn switch
+        {
+            Sensors.PawnState.Installed => "installed",
+            Sensors.PawnState.Broken => "broken - registered, but its driver file is missing",
+            _ => "not installed",
+        };
+        _sensorState.Text = $"Sensors: {Sensors.Status}\nPawnIO driver: {state}" +
+                            (Elevation.IsAdmin ? "" : "\n(Run Winnow as administrator to install or repair PawnIO.)") +
                             $"\nPer-process network (ETW): {NetEtw.Status}";
-        if (_pawnBtn != null) _pawnBtn.IsEnabled = !pawn && Elevation.IsAdmin;
+        if (_pawnBtn != null && !_pawnBusy)
+        {
+            // always available to an administrator: Install when missing, Repair when broken, Reinstall when fine
+            _pawnBtn.Content = pawn switch
+            {
+                Sensors.PawnState.Installed => "Reinstall PawnIO",
+                Sensors.PawnState.Broken => "Repair PawnIO",
+                _ => "Install PawnIO now",
+            };
+            _pawnBtn.IsEnabled = Elevation.IsAdmin;
+        }
     }
 
     async Task InstallPawn()
     {
-        await Ui.Busy(_pawnBtn, async () =>
+        bool force = Sensors.PawnIoState() == Sensors.PawnState.Installed;
+        _pawnBusy = true;
+        try
         {
-            var (ok, msg) = await Sensors.InstallPawnIoAsync();
-            Status.Set(ok ? "PawnIO " + msg + " - restarting sensors" : "PawnIO: " + msg, ok ? StatusKind.Good : StatusKind.Bad);
-            if (ok) await Task.Run(Sensors.Restart);
-        }, "Installing…");
+            await Ui.Busy(_pawnBtn, async () =>
+            {
+                var (ok, msg) = await Sensors.InstallPawnIoAsync(force);
+                Status.Set(ok ? "PawnIO " + msg + " - restarting sensors" : "PawnIO: " + msg, ok ? StatusKind.Good : StatusKind.Bad);
+                if (ok) await Task.Run(Sensors.Restart);
+                else if (Settings.Current.SensorsEnabled && !Sensors.Running) Sensors.Start();   // a repair stopped them first
+            }, force ? "Reinstalling…" : "Installing…");
+        }
+        finally { _pawnBusy = false; }
         RefreshSensorState();
     }
 

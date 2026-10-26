@@ -118,6 +118,7 @@
       "name": "Security and network",
       "apps": [
         { "id": "KeePassXCTeam.KeePassXC", "name": "KeePassXC", "description": "Offline password manager using a local encrypted file.", "tags": ["passwords", "security"] },
+        { "id": "IDRIX.VeraCrypt", "name": "VeraCrypt", "description": "Encrypts whole drives, partitions or file containers; the maintained successor to TrueCrypt.", "tags": ["encryption", "security", "privacy"] },
         { "id": "Bitwarden.Bitwarden", "name": "Bitwarden", "description": "Open-source password manager that syncs across devices.", "tags": ["passwords", "security"] },
         { "id": "Proton.ProtonPass", "name": "Proton Pass", "description": "Proton's end-to-end encrypted password manager.", "tags": ["passwords", "security"] },
         { "id": "Proton.ProtonVPN", "name": "Proton VPN", "description": "VPN from Proton with a free tier.", "tags": ["vpn", "privacy"] },

@@ -83,7 +83,8 @@ public static class Sensors
             if (Settings.Current.PawnIoAutoInstall && Elevation.IsAdmin && !IsPawnIoInstalled())
             {
                 SetStatus("Installing the PawnIO sensor driver…");
-                var (ok, msg) = InstallPawnIoAsync().GetAwaiter().GetResult();
+                // (this is the sensor thread itself, before it opens anything: nothing to release)
+                var (ok, msg) = InstallPawnIoAsync(releaseSensors: false).GetAwaiter().GetResult();
                 SetStatus(ok ? "PawnIO installed" : "PawnIO not installed: " + msg);
             }
 
@@ -219,32 +220,71 @@ public static class Sensors
 
     // -------------------------------------------------------------- PawnIO
 
-    public static bool IsPawnIoInstalled()
+    public enum PawnState { Missing, Installed, Broken }
+
+    public static bool IsPawnIoInstalled() => PawnIoState() == PawnState.Installed;
+
+    /// <summary>Installed = the service is registered AND its driver file is on disk. A service entry whose
+    /// file was deleted (Broken) is what makes winget and the installer think PawnIO is still there.</summary>
+    public static PawnState PawnIoState()
     {
         try
         {
             using var k = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\PawnIO");
-            return k != null;
+            if (k == null) return PawnState.Missing;
+            string file = DriverFile(k.GetValue("ImagePath") as string);
+            return file == null || File.Exists(file) ? PawnState.Installed : PawnState.Broken;
         }
-        catch { return false; }
+        catch { return PawnState.Missing; }
+    }
+
+    /// <summary>A service ImagePath ("\??\C:\...", "\SystemRoot\...", "System32\drivers\...") as a file path,
+    /// or null when it cannot be told (then the service entry is trusted).</summary>
+    static string DriverFile(string img)
+    {
+        if (string.IsNullOrWhiteSpace(img)) return null;
+        string p = Environment.ExpandEnvironmentVariables(img.Trim().Trim('"'));
+        string win = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+        if (p.StartsWith(@"\??\", StringComparison.Ordinal)) p = p.Substring(4);
+        if (p.StartsWith(@"\SystemRoot\", StringComparison.OrdinalIgnoreCase)) p = Path.Combine(win, p.Substring(12));
+        else if (p.StartsWith(@"System32\", StringComparison.OrdinalIgnoreCase)) p = Path.Combine(win, p);
+        return Path.IsPathRooted(p) && p.Length > 3 ? p : null;
     }
 
     const string PawnIoUrl = "https://github.com/namazso/PawnIO.Setup/releases/latest/download/PawnIO_setup.exe";
 
-    /// <summary>Install PawnIO: winget first, then the official installer. Needs admin.</summary>
-    public static async Task<(bool ok, string message)> InstallPawnIoAsync()
+    /// <summary>Install PawnIO: winget first, then the official installer. Needs admin. force = reinstall over a
+    /// working copy; a broken one (service left behind, driver file gone) is cleared out and reinstalled anyway.</summary>
+    public static async Task<(bool ok, string message)> InstallPawnIoAsync(bool force = false, bool releaseSensors = true)
     {
-        if (IsPawnIoInstalled()) return (true, "already installed");
+        var state = PawnIoState();
+        if (state == PawnState.Installed && !force) return (true, "already installed");
         if (!Elevation.IsAdmin) return (false, "needs administrator rights");
+        bool repair = force || state == PawnState.Broken;
+
+        if (repair && releaseSensors) { Stop(); await Task.Delay(300); }   // let go of the driver first
+        if (state == PawnState.Broken)
+        {
+            // the old service entry points at a file that is gone: remove it, or every install is skipped
+            string sc = Path.Combine(Environment.SystemDirectory, "sc.exe");
+            var st = await Shell.RunAsync(sc, "stop PawnIO", timeoutMs: 30_000);
+            var de = await Shell.RunAsync(sc, "delete PawnIO", timeoutMs: 30_000);
+            Log.Write($"PawnIO repair: sc stop exit {st.ExitCode}, sc delete exit {de.ExitCode}\n{de.Output}");
+            await Task.Delay(500);
+            if (PawnIoState() != PawnState.Missing)
+                return (false, "Windows will only finish removing the old driver after a restart - restart the PC, then press Install PawnIO again");
+        }
 
         string winget = Shell.WingetPath();
         if (winget != null)
         {
+            // --force: winget's own record may still say PawnIO is installed
             var r = await Shell.RunAsync(winget,
-                "install --id namazso.PawnIO -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity",
+                "install --id namazso.PawnIO -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity" +
+                (repair ? " --force" : ""),
                 timeoutMs: 180_000);
             Log.Write($"PawnIO via winget: exit {r.ExitCode}\n{r.Output}");
-            if (IsPawnIoInstalled()) return (true, "installed with winget");
+            if (IsPawnIoInstalled() && (!force || r.Ok)) return (true, repair ? "reinstalled with winget" : "installed with winget");
         }
 
         try
@@ -259,8 +299,10 @@ public static class Sensors
             var r = await Shell.RunAsync(tmp, "-install -silent", timeoutMs: 180_000);
             Log.Write($"PawnIO via installer: exit {r.ExitCode}\n{r.Output}");
             try { File.Delete(tmp); } catch { }
-            if (IsPawnIoInstalled()) return (true, "installed from pawnio.eu's official release");
-            return (false, $"installer exited {r.ExitCode} and the driver is still missing");
+            if (IsPawnIoInstalled() && (!force || r.Ok)) return (true, (repair ? "reinstalled" : "installed") + " from pawnio.eu's official release");
+            return (false, IsPawnIoInstalled()
+                ? $"the reinstall did not finish (installer exited {r.ExitCode}); the existing PawnIO is still in place"
+                : $"installer exited {r.ExitCode} and the driver is still missing");
         }
         catch (Exception ex)
         {
