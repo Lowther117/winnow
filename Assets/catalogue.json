@@ -44,6 +44,7 @@
         { "id": "Stremio.Stremio", "name": "Stremio", "description": "Media centre that organises films and series from add-ons.", "tags": ["video", "streaming"] },
         { "id": "Audacity.Audacity", "name": "Audacity", "description": "Records and edits audio.", "tags": ["audio", "editor"] },
         { "id": "HandBrake.HandBrake", "name": "HandBrake", "description": "Converts and compresses video files.", "tags": ["video", "converter"] },
+        { "id": "Stacher.Stacher", "name": "Stacher", "description": "Easy front end for yt-dlp: downloads video and audio from YouTube and hundreds of other sites.", "tags": ["video", "downloader", "youtube"] },
         { "id": "OBSProject.OBSStudio", "name": "OBS Studio", "description": "Screen recording and live streaming.", "tags": ["video", "recording", "streaming"] },
         { "id": "KDE.Kdenlive", "name": "Kdenlive", "description": "Free multi-track video editor.", "tags": ["video", "editor"] },
         { "id": "ShareX.ShareX", "name": "ShareX", "description": "Screenshots, screen recording and annotation with many upload options.", "tags": ["screenshot", "recording"] },
