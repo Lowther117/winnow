@@ -20,7 +20,7 @@ There is no Mac build. Winnow only does Windows things, so this is a deliberate 
 
 **Monitor**
 - **Summary**: a one-line verdict on what is slowing the PC right now and which process is responsible. Shows dials for CPU, memory, disk, GPU and temperatures, the top processes for each subsystem, energy use, and a privacy status card.
-- **Performance**: CPU (overall or per logical processor, with P-cores and E-cores coloured differently on hybrid CPUs), memory composition, each disk, each network adapter and the GPU, plus a **Thermals** table of every sensor on the board.
+- **Performance**: CPU (overall or per logical processor, with P-cores and E-cores coloured differently on hybrid CPUs), memory composition, each disk, each network adapter and the GPU, plus **Thermals**: a CPU / GPU / GPU hot-spot temperature graph, headline readings, and a table of every sensor on the board.
 - **Processes**: a live process list or tree. Columns cover CPU, memory, disk, network, GPU and estimated power per process. Right-click to end, end tree, suspend, resume, set priority or open the file location. Every action checks the process's start time first, so a PID that Windows has recycled can never point the action at the wrong program. svchost.exe lists the services it hosts.
 - **Connections**: every TCP/UDP connection with its process. It shows the host name this PC actually looked up for that IP, and bytes in and out. Microsoft telemetry and ad endpoints are flagged, and you can block a program's outbound traffic in one click.
 - **Flight Recorder**: the last hour (configurable) kept in memory. Scrub back to "the slow minute", jump to peaks, save it as a `.winnowtrace` file, reopen it later, or export CSV.

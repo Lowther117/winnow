@@ -73,6 +73,8 @@ public sealed class PerformanceView : UserControl, IView
     // ---- thermals
     Grid _thermPanel;
     TextBlock _thermTitle, _thermSub, _thermStatus, _thermWhy;
+    Graph _thermGraph;
+    readonly PerfStatPanel _thermStats = new();
     TextBox _filterBox;
     ComboBox _typeBox;
     DataGrid _thermGrid;
@@ -379,6 +381,7 @@ public sealed class PerformanceView : UserControl, IView
             }).ToList());
         }
         else if (_sel == "gpu") _gpuGraph.Seed(hist.Select(h => new[] { h.GpuPct ?? double.NaN }).ToList());
+        else if (_sel == "thermals") _thermGraph.Seed(hist.Select(ThermValues).ToList());
         foreach (var b in _blocks) b.UpdateScale();
     }
 
@@ -417,6 +420,7 @@ public sealed class PerformanceView : UserControl, IView
             _netBlock.UpdateScale();
         }
         else if (_sel == "gpu") _gpuGraph.Push(s.GpuPct ?? double.NaN);
+        else if (_sel == "thermals") _thermGraph.Push(ThermValues(s));
     }
 
     void UpdatePanel(Snapshot s)
@@ -921,6 +925,18 @@ public sealed class PerformanceView : UserControl, IView
 
     void BuildThermPanel()
     {
+        _thermGraph = new Graph { Capacity = Samples, Max = 100 };
+        _thermGraph.AddSeries("Graph4", true, 1.6, "CPU");
+        _thermGraph.AddSeries("Graph3", false, 1.6, "GPU");
+        _thermGraph.AddSeries("Graph2", false, 1.2, "GPU hot spot");
+        var block = new PerfGraphBlock("°C Temperature", _thermGraph, v => v.ToString("0") + "°C",
+                                       ("Graph4", "CPU"), ("Graph3", "GPU"), ("Graph2", "GPU hot spot"));
+        _blocks.Add(block);
+
+        foreach (var label in new[] { "CPU", "GPU", "GPU hot spot", "Hottest sensor", "CPU power", "GPU power" })
+            _thermStats.Set(label, Fmt.Na);
+        _thermStats.Margin = new Thickness(0, 10, 0, 0);
+
         _thermStatus = PerfUi.Wrapped();
         _thermStatus.Margin = new Thickness(0, 0, 0, 8);
 
@@ -957,10 +973,15 @@ public sealed class PerformanceView : UserControl, IView
 
         _thermPanel = new Grid();
         PerfUi.AddRow(_thermPanel, PerfUi.Title("Thermals", out _thermTitle, out _thermSub), GridLength.Auto);
+        PerfUi.AddRow(_thermPanel, block, new GridLength(1, GridUnitType.Star), 100);
+        PerfUi.AddRow(_thermPanel, _thermStats, GridLength.Auto);
         PerfUi.AddRow(_thermPanel, _thermStatus, GridLength.Auto);
         PerfUi.AddRow(_thermPanel, filters, GridLength.Auto);
-        PerfUi.AddRow(_thermPanel, tableArea, new GridLength(1, GridUnitType.Star), 120);
+        PerfUi.AddRow(_thermPanel, tableArea, new GridLength(1.6, GridUnitType.Star), 120);
     }
+
+    static double[] ThermValues(Snapshot h) =>
+        new[] { h.CpuTempC ?? double.NaN, h.GpuTempC ?? double.NaN, h.GpuHotspotC ?? double.NaN };
 
     static DataGrid SensorGrid(ListCollectionView view, bool withHardware)
     {
@@ -1025,6 +1046,14 @@ public sealed class PerformanceView : UserControl, IView
     {
         int n = s.Sensors.Count;
         _thermSub.Text = n > 0 ? $"{n} readings · {_thermView.Count} shown" : "";
+        _thermStats.Set("CPU", Fmt.Temp(s.CpuTempC));
+        _thermStats.Set("GPU", Fmt.Temp(s.GpuTempC));
+        _thermStats.Set("GPU hot spot", Fmt.Temp(s.GpuHotspotC));
+        var hottest = s.Sensors.Where(r => r.Type == "Temperature" && r.Value.HasValue).OrderByDescending(r => r.Value).FirstOrDefault();
+        _thermStats.Set("Hottest sensor", hottest != null ? Fmt.Temp(hottest.Value) : Fmt.Na,
+                        hottest != null ? hottest.Hardware + " · " + hottest.Name : null);
+        _thermStats.Set("CPU power", Fmt.Watts(s.CpuWatts));
+        _thermStats.Set("GPU power", Fmt.Watts(s.GpuWatts));
         _thermStatus.Text = "Sensors: " + Sensors.Status + "   ·   Values from LibreHardwareMonitor. Min and Max are since Winnow started.";
         bool empty = n == 0;
         _thermEmpty.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
