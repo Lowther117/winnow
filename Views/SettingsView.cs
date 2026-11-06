@@ -21,7 +21,7 @@ public sealed class SettingsView : UserControl, IView
         var look = new StackPanel();
         look.Children.Add(Ui.Text("Appearance", "H2"));
         var themes = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 6) };
-        foreach (var (key, label) in new[] { ("phosphor", "Phosphor purple"), ("dark", "Dark"), ("light", "Light") })
+        foreach (var (key, label) in new[] { ("glass", "Phosphor glass"), ("phosphor", "Phosphor purple"), ("dark", "Dark"), ("light", "Light") })
         {
             var rb = new RadioButton { Content = label, GroupName = "theme", IsChecked = Settings.Current.Theme == key, Tag = key };
             rb.Checked += (s, _) =>

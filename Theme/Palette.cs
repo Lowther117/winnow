@@ -6,7 +6,7 @@ namespace Winnow.Theme;
 
 /// <summary>
 /// The house palette, ported from theme.py (the shared Tk theme), plus
-/// Winnow's own Phosphor Purple. Same key names as theme.py so every app
+/// Winnow's own Phosphor Purple and the website's Phosphor Glass. Same key names as theme.py so every app
 /// reads as one family: bg, panel, sidebar, text, dim, border, accent,
 /// accent_text, field, field_text, field_border, sel, good, warn, bad, code,
 /// hint - plus graph colours and the phosphor glow switch.
@@ -25,7 +25,7 @@ public sealed class Palette
     public bool Phosphor;      // glow, scanlines, mono numerals
     public bool IsDark = true;
 
-    public static Palette Current { get; private set; } = PhosphorPurple();
+    public static Palette Current { get; private set; } = PhosphorGlass();
     public static event Action Changed;
 
     static Color C(string hex) => (Color)ColorConverter.ConvertFromString(hex);
@@ -70,15 +70,31 @@ public sealed class Palette
         Phosphor = true, IsDark = true,
     };
 
-    public static Palette ByName(string name) => name switch
+    // theme.py GLASS - the website's Phosphor glass theme flattened to solid colours:
+    // the purple haze's average as the ground, panels a shade lighter, softer borders.
+    // The default everywhere since Nov 2026. Glow and scanlines apply as in phosphor.
+    public static Palette PhosphorGlass() => new()
     {
-        "dark" => Dark(),
-        "light" => Light(),
-        _ => PhosphorPurple(),
+        Name = "glass",
+        Bg = C("#100a1f"), Panel = C("#1a1130"), Sidebar = C("#0b0616"), Text = C("#e6ccff"), Dim = C("#b596e8"),
+        Border = C("#3a2659"), Accent = C("#c79bff"), AccentText = C("#15082a"), Field = C("#0d0818"),
+        FieldText = C("#f3ebff"), FieldBorder = C("#7a56c4"), Sel = C("#2f1d52"), Good = C("#7de3a6"),
+        Warn = C("#ffc56b"), Bad = C("#ff6b8e"), Code = C("#0b0614"), Hint = C("#241740"),
+        Graph1 = C("#c79bff"), Graph2 = C("#e58cff"), Graph3 = C("#8fa8ff"), Graph4 = C("#ffc56b"),
+        Grid = C("#261a40"), PCore = C("#c79bff"), ECore = C("#8fa8ff"),
+        Phosphor = true, IsDark = true,
     };
 
-    /// <summary>Cycle Phosphor -> Dark -> Light (Ctrl+D).</summary>
-    public static string NextName(string name) => name switch { "phosphor" => "dark", "dark" => "light", _ => "phosphor" };
+    public static Palette ByName(string name) => name switch
+    {
+        "phosphor" => PhosphorPurple(),
+        "dark" => Dark(),
+        "light" => Light(),
+        _ => PhosphorGlass(),
+    };
+
+    /// <summary>Cycle Glass -> Phosphor -> Dark -> Light (Ctrl+D), the same order as theme.py.</summary>
+    public static string NextName(string name) => name switch { "glass" => "phosphor", "phosphor" => "dark", "dark" => "light", _ => "glass" };
 
     public static void Apply(string name)
     {
