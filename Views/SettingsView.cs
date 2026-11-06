@@ -39,7 +39,7 @@ public sealed class SettingsView : UserControl, IView
         }));
         look.Children.Add(Check("Smooth scrolling graphs (redraw at display refresh rate between samples)", Settings.Current.SmoothGraphs,
             v => { Settings.Current.SmoothGraphs = v; Settings.Save(); }));
-        look.Children.Add(Ui.Text("Ctrl+D cycles the three themes. Ctrl+1…9 jumps to a page.", "Sub"));
+        look.Children.Add(Ui.Text("Ctrl+D cycles the four themes. Ctrl+1…9 jumps to a page.", "Sub"));
         root.Children.Add(Ui.Card(look));
 
         // ---- measuring
